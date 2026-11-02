@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--
+    Content Security Policy: only this site's own scripts/styles may load.
+    No inline scripts, no eval, no third-party requests, no form posting.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Pick how much you want to focus on Weapon, Spirit and Vitality and get an optimized Deadlock item build with a purchase order.">
+  <title>Deadlock Build Maker</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>Deadlock <span>Build Maker</span></h1>
+      <p class="tagline">Choose your focus. Get an optimized item build and purchase order.</p>
+    </div>
+  </header>
+
+  <main class="wrap layout">
+    <!-- ─────────────── Controls ─────────────── -->
+    <form id="controls" class="panel controls" autocomplete="off" novalidate>
+      <section>
+        <h2>1. Hero <small>(optional)</small></h2>
+        <label class="sr-only" for="hero">Hero</label>
+        <select id="hero" name="hero"></select>
+        <p class="help">Picking a hero sets a suggested focus and favors items that suit the hero's kit.</p>
+      </section>
+
+      <section>
+        <h2>2. Focus</h2>
+        <div class="slider weapon">
+          <label for="focus-weapon">Weapon</label>
+          <input id="focus-weapon" type="range" min="0" max="100" step="5" data-cat="weapon">
+          <output for="focus-weapon" id="out-weapon">0%</output>
+        </div>
+        <div class="slider spirit">
+          <label for="focus-spirit">Spirit</label>
+          <input id="focus-spirit" type="range" min="0" max="100" step="5" data-cat="spirit">
+          <output for="focus-spirit" id="out-spirit">0%</output>
+        </div>
+        <div class="slider vitality">
+          <label for="focus-vitality">Vitality</label>
+          <input id="focus-vitality" type="range" min="0" max="100" step="5" data-cat="vitality">
+          <output for="focus-vitality" id="out-vitality">0%</output>
+        </div>
+        <div class="preset-row" id="presets">
+          <button type="button" data-preset="weapon">Gun carry</button>
+          <button type="button" data-preset="spirit">Spirit caster</button>
+          <button type="button" data-preset="vitality">Frontline tank</button>
+          <button type="button" data-preset="balanced">Hybrid</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Playstyle priorities</h2>
+        <div id="priorities" class="chips" role="group" aria-label="Playstyle priorities"></div>
+      </section>
+
+      <section>
+        <h2>4. Game plan</h2>
+        <div id="plans" class="segmented" role="radiogroup" aria-label="Game plan"></div>
+      </section>
+
+      <section class="actions">
+        <button type="button" id="reset" class="ghost">Reset</button>
+      </section>
+    </form>
+
+    <!-- ─────────────── Results ─────────────── -->
+    <section class="results" aria-live="polite">
+      <div class="panel">
+        <div class="result-head">
+          <div>
+            <h2 id="build-title">Recommended build</h2>
+            <p class="help" id="build-summary"></p>
+          </div>
+          <div class="share">
+            <button type="button" id="copy-link">Copy share link</button>
+            <span id="copy-status" class="status" role="status"></span>
+          </div>
+        </div>
+        <div class="dist" id="distribution" aria-label="Item slots by category"></div>
+        <div id="phases"></div>
+        <div id="banned-wrap" class="banned" hidden>
+          <span>Excluded:</span>
+          <div id="banned" class="chips small"></div>
+          <button type="button" id="clear-banned" class="ghost small">Clear</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Tips</h2>
+        <ul id="tips" class="tips"></ul>
+      </div>
+
+      <div class="panel">
+        <h2>Saved builds <small>(this device only)</small></h2>
+        <div class="save-row">
+          <label class="sr-only" for="save-name">Build name</label>
+          <input id="save-name" type="text" maxlength="40" placeholder="Name this build" spellcheck="false">
+          <button type="button" id="save">Save</button>
+        </div>
+        <ul id="saved" class="saved"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Fan-made project. Not affiliated with or endorsed by Valve. Deadlock is a trademark of Valve Corporation.
+        Item data is community-maintained and may lag behind the latest patch.</p>
+    </div>
+  </footer>
+</body>
+</html>

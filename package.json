@@ -1,0 +1,11 @@
+{
+  "name": "deadlock-build-maker",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Static web app that recommends Deadlock item builds from a Weapon / Spirit / Vitality focus.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "python -m http.server 8080"
+  }
+}

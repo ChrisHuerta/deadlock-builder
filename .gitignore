@@ -1,0 +1,18 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Dependencies / build output (if tooling is added later)
+node_modules/
+dist/
+coverage/
+
+# Secrets — never commit these
+.env
+.env.*
+*.pem
+*.key
