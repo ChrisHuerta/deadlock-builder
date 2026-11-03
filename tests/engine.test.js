@@ -52,7 +52,7 @@ test('banned items never appear', () => {
 });
 
 test('share link round-trips', () => {
-  const s = sanitizeState({ hero: 'haze', focus: { weapon: 60, spirit: 10, vitality: 30 }, priorities: ['dps', 'sustain'], plan: 'late', banned: ['glass_cannon'], counters: ['spirit', 'flying'] });
+  const s = sanitizeState({ hero: 'haze', focus: { weapon: 60, spirit: 10, vitality: 30 }, priorities: ['dps', 'sustain'], plan: 'late', banned: ['glass_cannon'], counters: ['spirit', 'flying'], pinned: ['ricochet'], counterPins: ['knockdown'] });
   assert.deepEqual(decodeState('#' + encodeState(s)), s);
 });
 
@@ -91,6 +91,46 @@ test('banned items are never suggested as counters, and no counters by default',
   const top = first.counters[0].options[0].item.id;
   const second = generateBuild(sanitizeState({ ...defaultState(), counters: ['flying'], banned: [top] }));
   assert.ok(!second.counters[0].options.some((o) => o.item.id === top));
+});
+
+test('every item offers up to 4 swap alternatives that are not already in the build', () => {
+  const b = generateBuild(defaultState());
+  const core = allIds(b);
+  for (const p of b.phases.flatMap((ph) => ph.items)) {
+    assert.ok(p.alternatives.length > 0 && p.alternatives.length <= 4, `${p.item.name} has 1-4 alternatives`);
+    for (const a of p.alternatives) {
+      assert.ok(!core.includes(a.item.id), `${a.item.name} is not already in the build`);
+      assert.equal(a.item.cat, p.item.cat, 'alternative is the same category');
+    }
+  }
+});
+
+test('choosing a swap alternative puts exactly that item in the build', () => {
+  const first = generateBuild(defaultState());
+  const target = first.phases[1].items[0];             // some tier-2 item
+  const choice = target.alternatives[2].item;           // not the obvious #1 pick
+  const second = generateBuild(sanitizeState({ ...defaultState(), banned: [target.item.id], pinned: [choice.id] }));
+  const ids = allIds(second);
+  assert.ok(ids.includes(choice.id), 'chosen item is in the build');
+  assert.ok(!ids.includes(target.item.id), 'swapped-out item is gone');
+  assert.equal(ids.length, 12);
+  assert.ok(second.phases.flatMap((ph) => ph.items).find((p) => p.item.id === choice.id).pinned);
+});
+
+test('choosing a counter alternative shows that counter', () => {
+  const first = generateBuild(sanitizeState({ ...defaultState(), counters: ['spirit'] }));
+  const opt = first.counters[0].options[0];
+  const choice = opt.alternatives[0].item;
+  const second = generateBuild(sanitizeState({ ...defaultState(), counters: ['spirit'], banned: [opt.item.id], counterPins: [choice.id] }));
+  const shown = second.counters[0].options.map((o) => o.item.id);
+  assert.equal(shown[0], choice.id, 'pinned counter is listed first');
+  assert.ok(!shown.includes(opt.item.id));
+  assert.ok(!allIds(second).includes(choice.id), 'pinned counter does not leak into the core build');
+});
+
+test('an item cannot be both excluded and pinned', () => {
+  const s = sanitizeState({ ...defaultState(), banned: ['ricochet'], pinned: ['ricochet', 'glass_cannon'] });
+  assert.deepEqual(s.pinned, ['glass_cannon']);
 });
 
 // Simulates a hacked share link: script tags, huge/negative/non-numeric

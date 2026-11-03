@@ -196,6 +196,24 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .have { margin: 6px 0 0; font-size: .85rem; color: var(--vitality); }
 .counter-chips .chip input:checked + span { background: var(--counter); border-color: var(--counter); color: #1a140c; }
 
+/* Swap list (opens under a card) */
+.item.swapping { border-color: var(--accent); }
+.swap.open { border-color: var(--accent); color: var(--accent); }
+.why.pinned { color: var(--accent); font-weight: 600; opacity: 1; }
+.swap-panel { margin-top: 4px; padding-top: 8px; border-top: 1px dashed var(--line); display: grid; gap: 8px; }
+.swap-title { margin: 0; font-size: .82rem; color: var(--muted); }
+.swap-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.swap-choice {
+  width: 100%; text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px;
+  padding: 6px 8px; border-left: 3px solid var(--c, var(--accent));
+}
+.swap-choice.weapon { --c: var(--weapon); }
+.swap-choice.spirit { --c: var(--spirit); }
+.swap-choice.vitality { --c: var(--vitality); }
+.swap-name { font-weight: 600; }
+.swap-why { grid-column: 1 / -1; font-size: .76rem; color: var(--muted); }
+.swap-panel .row { display: flex; gap: 6px; flex-wrap: wrap; }
+
 .banned { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 18px; color: var(--muted); font-size: .88rem; }
 .banned[hidden] { display: none; }
 

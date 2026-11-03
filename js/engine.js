@@ -210,12 +210,13 @@ function planSlots(quotas, tierCounts) {
 }
 
 /**
- * Choose the best item for one slot.
+ * Choose the best item for one slot, and remember the runners-up so the UI
+ * can offer them when the user clicks "Swap".
  * If no item of the exact category+tier is left (e.g. you excluded them all
  * with "Swap"), it looks at neighbouring tiers in the same category, and only
  * as a last resort at other categories.
  */
-function pickItem(slot, chosen, banned, tagWeights, tagCounts) {
+function pickItem(slot, chosen, banned, pinned, tagWeights, tagCounts) {
   // All items of a category+tier that are still allowed.
   const available = (cat, tier) =>
     ITEMS.filter((it) => it.cat === cat && it.tier === tier && !chosen.has(it.id) && !banned.has(it.id));
@@ -237,17 +238,24 @@ function pickItem(slot, chosen, banned, tagWeights, tagCounts) {
   }
   if (!pool.length) return null; // nothing left at all
 
-  // Keep the highest-scoring item. Ties are broken alphabetically so the
+  // Score every candidate, best first. Ties are broken alphabetically so the
   // result is always the same for the same input (deterministic).
-  let best = null;
-  for (const item of pool) {
-    const s = scoreItem(item, tagWeights, tagCounts);
-    if (!best || s.score > best.score || (s.score === best.score && item.name < best.item.name)) {
-      best = { item, ...s }; // ≈ {"item": item, **s}
-    }
-  }
-  return best;
+  const ranked = pool
+    .map((item) => ({ item, ...scoreItem(item, tagWeights, tagCounts) })) // ≈ {"item": item, **s}
+    .sort((a, b) => b.score - a.score || (a.item.name < b.item.name ? -1 : 1));
+
+  // An item the user pinned (picked from the Swap list) always wins its slot.
+  const best = ranked.find((r) => pinned.has(r.item.id)) || ranked[0];
+
+  // The runners-up become this slot's "Swap" choices. We keep a few extra
+  // because some may be picked for later slots (filtered out in generateBuild).
+  const alternatives = ranked.filter((r) => r !== best).slice(0, SWAP_CHOICES + 4)
+    .map((r) => ({ item: r.item, reasons: r.reasons }));
+  return { ...best, pinned: pinned.has(best.item.id), alternatives };
 }
+
+// How many alternatives the Swap list shows for each item.
+export const SWAP_CHOICES = 4;
 
 // ───────────────────────── Counter items ─────────────────────────
 //
@@ -284,18 +292,26 @@ function buildCounters(state, fractions, picks, banned) {
   const used = new Set();       // counter items already suggested for another threat
   const reserved = new Set();   // core items already earmarked for replacement
 
+  const pinned = new Set(state.counterPins);   // counters the user chose from a Swap list
+
   return state.counters
     .map((tid) => COUNTER_BY_ID.get(tid))
     .filter(Boolean)
     .map((threat) => {
       const n = threat.items.length;
       const alreadyHave = threat.items.filter((c) => inBuild.has(c.item.id)).map((c) => c.item);
-      const options = threat.items
-        .map((c, idx) => ({ ...c, rank: (1 - idx / n) + COUNTER_FOCUS_WEIGHT * fractions[c.item.cat] }))
+      // Every usable counter for this threat, best first (pinned ones on top).
+      const ranked = threat.items
+        .map((c, idx) => ({ ...c, rank: (1 - idx / n) + COUNTER_FOCUS_WEIGHT * fractions[c.item.cat] + (pinned.has(c.item.id) ? 100 : 0) }))
         .filter((c) => !inBuild.has(c.item.id) && !banned.has(c.item.id) && !used.has(c.item.id))
-        .sort((a, b) => b.rank - a.rank)
-        .slice(0, COUNTER_OPTIONS)
-        .map((c) => ({ item: c.item, why: c.why, replace: pickReplacement(picks, reserved) }));
+        .sort((a, b) => b.rank - a.rank);
+      const shown = ranked.slice(0, COUNTER_OPTIONS);
+      // The rest of this threat's list is what "Swap" can offer instead.
+      const spare = ranked.slice(COUNTER_OPTIONS, COUNTER_OPTIONS + SWAP_CHOICES).map((c) => ({ item: c.item, why: c.why }));
+      const options = shown.map((c) => ({
+        item: c.item, why: c.why, pinned: pinned.has(c.item.id),
+        replace: pickReplacement(picks, reserved), alternatives: spare,
+      }));
 
       options.forEach((o) => used.add(o.item.id));
       if (options[0]?.replace) reserved.add(options[0].replace.id);
@@ -320,7 +336,9 @@ function buildTips(fractions, state, quotas) {
  *
  * @param state  Already-validated object (see sanitizeState in state.js):
  *   { hero: 'haze', focus: {weapon, spirit, vitality}, priorities: ['dps'],
- *     plan: 'balanced', banned: ['glass_cannon'] }
+ *     plan: 'balanced', banned: ['glass_cannon'], pinned: ['ricochet'],
+ *     counters: ['flying'], counterPins: ['knockdown'] }
+ * Each pick in phases[].items is { item, score, reasons, pinned, alternatives }.
  * @returns { fractions, quotas, phases: [{tier, label, hint, items}], totalCost, tips, counters }
  */
 export function generateBuild(state) {
@@ -332,17 +350,22 @@ export function generateBuild(state) {
   // Step 3 inputs: scoring weights.
   const tagWeights = buildTagWeights(state, fractions);
   const banned = new Set(state.banned);
+  const pinned = new Set(state.pinned);
   const chosen = new Set();      // ids already in the build
   const tagCounts = new Map();   // tag → how many chosen items have it
 
-  // Fill each planned slot with the best-scoring item.
+  // Fill each planned slot with the best-scoring (or pinned) item.
   const picks = [];
   for (const slot of planSlots(quotas, plan.tiers)) {
-    const pick = pickItem(slot, chosen, banned, tagWeights, tagCounts);
+    const pick = pickItem(slot, chosen, banned, pinned, tagWeights, tagCounts);
     if (!pick) continue;
     chosen.add(pick.item.id);
     pick.item.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1));
     picks.push(pick);
+  }
+  // Swap choices must not include items that ended up elsewhere in the build.
+  for (const p of picks) {
+    p.alternatives = p.alternatives.filter((a) => !chosen.has(a.item.id)).slice(0, SWAP_CHOICES);
   }
 
   // Group picks by tier for display; drop phases with no items.

@@ -11,6 +11,8 @@
 //     plan: 'balanced',                              // or 'early' / 'late'
 //     banned: ['glass_cannon'],                      // items removed with "Swap"
 //     counters: ['spirit', 'flying'],                // enemy threats to counter
+//     pinned: ['ricochet'],                          // items chosen from a Swap list
+//     counterPins: ['knockdown'],                    // counters chosen from a Swap list
 //   }
 //
 // Share links store this state in the part of the URL after '#' (the "hash"):
@@ -44,6 +46,8 @@ export function defaultState() {
     plan: 'balanced',
     banned: [],
     counters: [],
+    pinned: [],
+    counterPins: [],
   };
 }
 
@@ -92,14 +96,21 @@ export function sanitizeState(input) {
     plan: typeof input.plan === 'string' && GAME_PLAN_BY_ID.has(input.plan) ? input.plan : d.plan,
     banned: cleanIdList(input.banned, ITEM_BY_ID),
     counters: cleanIdList(input.counters, COUNTER_BY_ID),
+    // An item can't be both excluded and pinned; excluded wins.
+    pinned: cleanIdList(input.pinned, ITEM_BY_ID).filter((id) => !bannedIncludes(input, id)),
+    counterPins: cleanIdList(input.counterPins, ITEM_BY_ID).filter((id) => !bannedIncludes(input, id)),
   };
+}
+
+function bannedIncludes(input, id) {
+  return Array.isArray(input.banned) && input.banned.includes(id);
 }
 
 /**
  * State → short URL hash text (without the '#').
  * Keys are single letters to keep links short:
  *   h=hero  w/s/v=weapon/spirit/vitality  p=priorities  g=game plan  x=excluded items
- *   c=counters
+ *   c=counters  k=pinned items  kc=pinned counter items
  * Lists are joined with '.' (ids never contain dots).
  * URLSearchParams handles URL-escaping, like urllib.parse.urlencode in Python.
  */
@@ -113,6 +124,8 @@ export function encodeState(state) {
   if (state.plan !== 'balanced') p.set('g', state.plan);
   if (state.banned.length) p.set('x', state.banned.join('.'));
   if (state.counters.length) p.set('c', state.counters.join('.'));
+  if (state.pinned.length) p.set('k', state.pinned.join('.'));
+  if (state.counterPins.length) p.set('kc', state.counterPins.join('.'));
   return p.toString();
 }
 
@@ -140,5 +153,7 @@ export function decodeState(hash) {
     plan: p.get('g') || 'balanced',
     banned: split('x'),
     counters: split('c'),
+    pinned: split('k'),
+    counterPins: split('kc'),
   });
 }

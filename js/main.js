@@ -138,13 +138,19 @@ function initControls() {
   }
 
   // Remaining buttons.
-  $('reset').addEventListener('click', () => { state = defaultState(); render(); });
-  $('clear-banned').addEventListener('click', () => update({ banned: [] }));
+  $('reset').addEventListener('click', () => { state = defaultState(); openSwap = null; render(); });
+  // "Clear" resets your swaps entirely: nothing excluded, nothing pinned.
+  $('clear-banned').addEventListener('click', () => update({ banned: [], pinned: [], counterPins: [] }));
   $('copy-link').addEventListener('click', copyLink);
   $('save').addEventListener('click', onSave);
   $('save-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); onSave(); } });
   // The controls are a <form>; stop Enter from "submitting" and reloading the page.
   $('controls').addEventListener('submit', (e) => e.preventDefault());
+
+  // Escape closes an open Swap list.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && openSwap) { openSwap = null; render(); }
+  });
 
   // If the user pastes a different share link into the address bar (or hits
   // Back), load that build.
@@ -195,14 +201,67 @@ function renderDistribution(quotas) {
   }
 }
 
+// ───── Swap lists ─────
+// Which card's Swap list is open, e.g. 'core:ricochet' or 'counter:knockdown'.
+// This is temporary UI state, so it isn't part of `state` or the share link.
+let openSwap = null;
+
+/** Open/close a card's Swap list (only one open at a time). */
+function toggleSwap(key) {
+  openSwap = openSwap === key ? null : key;
+  render();
+  // Move keyboard focus into the list so keyboard users land on the choices.
+  if (openSwap) document.querySelector(`[data-swap-key="${CSS.escape(key)}"] button`)?.focus();
+}
+
+/**
+ * Replace item `fromId` with `toId` (or let the builder choose if toId is null).
+ * The old item is excluded; the new one is pinned so it's guaranteed a spot.
+ * `pinKey` is 'pinned' for the core build or 'counterPins' for counters.
+ */
+function swapItem(fromId, toId, pinKey) {
+  const pins = state[pinKey].filter((id) => id !== fromId);
+  openSwap = null;
+  update({ banned: [...state.banned, fromId], [pinKey]: toId ? [...pins, toId] : pins });
+}
+
+/** The list of alternatives shown under a card after clicking Swap. */
+function swapPanel(key, item, alternatives, pinKey, describe) {
+  const choices = alternatives.map((alt) => {
+    const b = el('button', { type: 'button', class: `swap-choice ${alt.item.cat}` },
+      el('span', { class: 'swap-name' }, alt.item.name),
+      el('span', { class: 'cost' }, fmt(TIER_COST[alt.item.tier])),
+      el('span', { class: 'swap-why' }, describe(alt)),
+    );
+    b.addEventListener('click', () => swapItem(item.id, alt.item.id, pinKey));
+    return el('li', {}, b);
+  });
+  const auto = el('button', { type: 'button', class: 'ghost small' }, 'Let the builder choose');
+  auto.addEventListener('click', () => swapItem(item.id, null, pinKey));
+  const cancel = el('button', { type: 'button', class: 'ghost small' }, 'Cancel');
+  cancel.addEventListener('click', () => toggleSwap(key));
+
+  return el('div', { class: 'swap-panel', 'data-swap-key': key, role: 'group', 'aria-label': `Alternatives to ${item.name}` },
+    el('p', { class: 'swap-title' }, `Swap ${item.name} for:`),
+    choices.length ? el('ul', { class: 'swap-list' }, ...choices) : el('p', { class: 'help' }, 'No other items available for this slot.'),
+    el('div', { class: 'row' }, auto, cancel),
+  );
+}
+
+/** The Swap button for a card (shows whether its list is open). */
+function swapButton(key, item) {
+  const open = openSwap === key;
+  const b = el('button', { type: 'button', class: `swap${open ? ' open' : ''}`, 'aria-expanded': String(open), title: `See alternatives to ${item.name}` }, open ? 'Close' : 'Swap');
+  b.addEventListener('click', () => toggleSwap(key));
+  return b;
+}
+
 /** One item card: badge, name, cost, description, "Fits: ..." reasons, Swap button. */
 function itemCard(pick) {
-  const { item, reasons } = pick; // ≈ item, reasons = pick["item"], pick["reasons"]
-  const swap = el('button', { type: 'button', class: 'swap', title: `Exclude ${item.name} and pick an alternative`, 'aria-label': `Swap out ${item.name}` }, 'Swap');
-  // Swap = add to the banned list; the engine then picks the next-best item.
-  swap.addEventListener('click', () => update({ banned: [...state.banned, item.id] }));
+  const { item, reasons, alternatives } = pick; // ≈ item, reasons = pick["item"], pick["reasons"]
+  const key = `core:${item.id}`;
 
-  return el('li', { class: `item ${item.cat}` },
+  return el('li', { class: `item ${item.cat}${openSwap === key ? ' swapping' : ''}` },
     el('div', { class: 'item-top' },
       el('span', { class: 'badge' }, CATEGORIES[item.cat].short),
       el('strong', {}, item.name),
@@ -210,9 +269,14 @@ function itemCard(pick) {
     ),
     el('p', { class: 'desc' }, item.desc),
     el('div', { class: 'item-foot' },
-      reasons.length ? el('span', { class: 'why' }, `Fits: ${reasons.join(', ')}`) : el('span', { class: 'why' }, 'Solid general pick'),
-      swap,
+      pick.pinned
+        ? el('span', { class: 'why pinned' }, 'Your pick')
+        : el('span', { class: 'why' }, reasons.length ? `Fits: ${reasons.join(', ')}` : 'Solid general pick'),
+      swapButton(key, item),
     ),
+    openSwap === key
+      ? swapPanel(key, item, alternatives, 'pinned', (alt) => (alt.reasons.length ? `Fits: ${alt.reasons.join(', ')}` : 'General pick'))
+      : null,
   );
 }
 
@@ -221,11 +285,10 @@ function itemCard(pick) {
  * explains WHY it counters the threat, and says which core item to sell.
  */
 function counterCard(option) {
-  const { item, why, replace } = option;
-  const swap = el('button', { type: 'button', class: 'swap', title: `Exclude ${item.name} and suggest another counter`, 'aria-label': `Swap out ${item.name}` }, 'Swap');
-  swap.addEventListener('click', () => update({ banned: [...state.banned, item.id] }));
+  const { item, why, replace, alternatives } = option;
+  const key = `counter:${item.id}`;
 
-  return el('li', { class: `item counter ${item.cat}` },
+  return el('li', { class: `item counter ${item.cat}${openSwap === key ? ' swapping' : ''}` },
     el('div', { class: 'item-top' },
       el('span', { class: 'badge' }, CATEGORIES[item.cat].short),
       el('strong', {}, item.name),
@@ -237,7 +300,11 @@ function counterCard(option) {
         ? ['Replace: ', el('strong', {}, replace.name), ` (${fmt(TIER_COST[replace.tier])})`]
         : ['Use a free slot']),
     ),
-    el('div', { class: 'item-foot' }, el('span', { class: 'why' }, `Tier ${item.tier} · ${CATEGORIES[item.cat].label}`), swap),
+    el('div', { class: 'item-foot' },
+      el('span', { class: `why${option.pinned ? ' pinned' : ''}` }, option.pinned ? 'Your pick' : `Tier ${item.tier} · ${CATEGORIES[item.cat].label}`),
+      swapButton(key, item),
+    ),
+    openSwap === key ? swapPanel(key, item, alternatives, 'counterPins', (alt) => alt.why) : null,
   );
 }
 
