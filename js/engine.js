@@ -45,6 +45,7 @@
 import { ITEMS, TIER_COST, CATEGORIES } from './data/items.js';
 import { HERO_BY_ID } from './data/heroes.js';
 import { PRIORITY_BY_ID, GAME_PLAN_BY_ID, TAG_LABELS } from './data/priorities.js';
+import { COUNTER_BY_ID } from './data/counters.js';
 
 // A Deadlock build has 12 item slots once all flex slots are unlocked.
 export const TOTAL_SLOTS = 12;
@@ -248,6 +249,60 @@ function pickItem(slot, chosen, banned, tagWeights, tagCounts) {
   return best;
 }
 
+// ───────────────────────── Counter items ─────────────────────────
+//
+// Counter items are NOT part of the 12-slot core build. For each enemy
+// threat the user selects, we suggest up to COUNTER_OPTIONS items and, for
+// each one, which core item to sell to make room.
+//
+// Which counters? data/manual/counters.json lists them in priority order
+// (cheap/most reliable first). We blend that order with your focus, so a
+// spirit player countering tanks sees Decay/Tankbuster before Toxic Bullets:
+//
+//     counterScore = (1 − position / listLength) + 0.8 × yourFocusShare[item category]
+//
+// What to replace? Like real players do: sell your CHEAPEST items first
+// (lowest tier), and among those the one with the lowest score (least
+// valuable to your build). This avoids selling core power items like a
+// tier-3/4 item your build is built around.
+// Within one threat, every option suggests the same kind of swap (you'd buy
+// just one of them). The top option's replacement is then reserved, so the
+// next threat suggests replacing a different item.
+
+const COUNTER_OPTIONS = 3;
+const COUNTER_FOCUS_WEIGHT = 0.8;
+
+function pickReplacement(picks, reserved) {
+  const pool = picks.filter((p) => !reserved.has(p.item.id));
+  if (!pool.length) return null;
+  // Lowest tier first; within a tier, the lowest score.
+  return pool.reduce((a, b) => (b.item.tier < a.item.tier || (b.item.tier === a.item.tier && b.score < a.score) ? b : a)).item;
+}
+
+function buildCounters(state, fractions, picks, banned) {
+  const inBuild = new Set(picks.map((p) => p.item.id));
+  const used = new Set();       // counter items already suggested for another threat
+  const reserved = new Set();   // core items already earmarked for replacement
+
+  return state.counters
+    .map((tid) => COUNTER_BY_ID.get(tid))
+    .filter(Boolean)
+    .map((threat) => {
+      const n = threat.items.length;
+      const alreadyHave = threat.items.filter((c) => inBuild.has(c.item.id)).map((c) => c.item);
+      const options = threat.items
+        .map((c, idx) => ({ ...c, rank: (1 - idx / n) + COUNTER_FOCUS_WEIGHT * fractions[c.item.cat] }))
+        .filter((c) => !inBuild.has(c.item.id) && !banned.has(c.item.id) && !used.has(c.item.id))
+        .sort((a, b) => b.rank - a.rank)
+        .slice(0, COUNTER_OPTIONS)
+        .map((c) => ({ item: c.item, why: c.why, replace: pickReplacement(picks, reserved) }));
+
+      options.forEach((o) => used.add(o.item.id));
+      if (options[0]?.replace) reserved.add(options[0].replace.id);
+      return { id: threat.id, label: threat.label, hint: threat.hint, alreadyHave, options };
+    });
+}
+
 /** Simple rule-based advice shown in the "Tips" panel. */
 function buildTips(fractions, state, quotas) {
   const tips = [];
@@ -255,7 +310,7 @@ function buildTips(fractions, state, quotas) {
   if (fractions.weapon >= 0.45) tips.push('Gun-heavy: farm hard with your weapon early. Fire rate and ammo items stack well together.');
   if (fractions.vitality >= 0.45) tips.push('Tank-heavy: you win by staying in fights longer. Buy bullet or spirit armor based on which damage type the enemy team leans on.');
   if (quotas.vitality === 0) tips.push('No vitality items: you will be fragile. One cheap health item usually pays for itself.');
-  if (!state.priorities.includes('anti_heal')) tips.push('If the enemy has lots of healing or lifesteal, add Toxic Bullets, Decay or Healbane.');
+  if (!state.priorities.includes('anti_heal') && !state.counters.includes('vitality')) tips.push('If the enemy has lots of healing or lifesteal, turn on "Tanky enemies" under Counter the enemy.');
   tips.push('Your flex slots unlock as the game goes on. Late in the game, sell lane-phase items to make room for bigger upgrades.');
   return tips;
 }
@@ -266,7 +321,7 @@ function buildTips(fractions, state, quotas) {
  * @param state  Already-validated object (see sanitizeState in state.js):
  *   { hero: 'haze', focus: {weapon, spirit, vitality}, priorities: ['dps'],
  *     plan: 'balanced', banned: ['glass_cannon'] }
- * @returns { fractions, quotas, phases: [{tier, label, hint, items}], totalCost, tips }
+ * @returns { fractions, quotas, phases: [{tier, label, hint, items}], totalCost, tips, counters }
  */
 export function generateBuild(state) {
   // Step 1: sliders → fractions → slot counts per category.
@@ -310,5 +365,7 @@ export function generateBuild(state) {
     // reduce ≈ sum(TIER_COST[p.item.tier] for p in picks)
     totalCost: picks.reduce((sum, p) => sum + TIER_COST[p.item.tier], 0),
     tips: buildTips(fractions, state, actual),
+    // [{ id, label, hint, alreadyHave: [item], options: [{ item, why, replace }] }]
+    counters: buildCounters(state, fractions, picks, banned),
   };
 }

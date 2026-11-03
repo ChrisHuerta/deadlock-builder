@@ -23,6 +23,7 @@
   --vitality: #6fbf4a;
   --spirit: #a77bf0;
   --danger: #e0645a;
+  --counter: #e0645a;
   --radius: 10px;
   color-scheme: dark;
 }
@@ -179,6 +180,21 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .item-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .why { font-size: .78rem; color: var(--text); opacity: .8; }
 .swap { font-size: .75rem; padding: 2px 8px; background: transparent; }
+
+/* Counter items: red border and section rule, but the badge keeps the item's
+   real category color (set by .weapon/.spirit/.vitality on the badge). */
+.counters-phase { margin-top: 28px; padding-top: 16px; border-top: 2px solid var(--counter); }
+.counters-phase h3 { color: var(--counter); }
+.counter-group { margin-top: 14px; }
+.counter-group h4 { margin: 0; font-size: .95rem; }
+.item.counter { border-left-color: var(--counter); }
+.item.counter.weapon .badge { background: var(--weapon); }
+.item.counter.spirit .badge { background: var(--spirit); }
+.item.counter.vitality .badge { background: var(--vitality); }
+.replace { margin: 0; font-size: .82rem; color: var(--text); }
+.replace strong { color: var(--counter); }
+.have { margin: 6px 0 0; font-size: .85rem; color: var(--vitality); }
+.counter-chips .chip input:checked + span { background: var(--counter); border-color: var(--counter); color: #1a140c; }
 
 .banned { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 18px; color: var(--muted); font-size: .88rem; }
 .banned[hidden] { display: none; }

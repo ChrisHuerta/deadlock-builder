@@ -52,14 +52,52 @@ test('banned items never appear', () => {
 });
 
 test('share link round-trips', () => {
-  const s = sanitizeState({ hero: 'haze', focus: { weapon: 60, spirit: 10, vitality: 30 }, priorities: ['dps', 'sustain'], plan: 'late', banned: ['glass_cannon'] });
+  const s = sanitizeState({ hero: 'haze', focus: { weapon: 60, spirit: 10, vitality: 30 }, priorities: ['dps', 'sustain'], plan: 'late', banned: ['glass_cannon'], counters: ['spirit', 'flying'] });
   assert.deepEqual(decodeState('#' + encodeState(s)), s);
+});
+
+test('counters stay outside the core build and suggest sensible replacements', () => {
+  const state = sanitizeState({ ...defaultState(), counters: ['weapon', 'spirit', 'vitality', 'flying'] });
+  const b = generateBuild(state);
+  const core = allIds(b);
+  assert.equal(core.length, 12, 'core build still has 12 items');
+  assert.equal(b.counters.length, 4);
+  const seen = new Set();
+  for (const threat of b.counters) {
+    assert.ok(threat.options.length > 0 && threat.options.length <= 3, `${threat.id} has 1-3 options`);
+    for (const o of threat.options) {
+      assert.ok(!core.includes(o.item.id), `${o.item.name} is not already in the core build`);
+      assert.ok(!seen.has(o.item.id), `${o.item.name} is not suggested for two threats`);
+      seen.add(o.item.id);
+      assert.ok(o.replace && core.includes(o.replace.id), 'replacement is a core build item');
+    }
+  }
+  // The top option for different threats should replace different core items.
+  const tops = b.counters.map((t) => t.options[0].replace.id);
+  assert.equal(new Set(tops).size, tops.length);
+});
+
+test('a counter never replaces a more expensive item when a cheaper one exists', () => {
+  const b = generateBuild(sanitizeState({ ...defaultState(), counters: ['weapon'] }));
+  const coreTiers = b.phases.flatMap((p) => p.items.map((i) => i.item.tier));
+  for (const o of b.counters[0].options) {
+    if (coreTiers.some((t) => t <= o.item.tier)) assert.ok(o.replace.tier <= o.item.tier);
+  }
+});
+
+test('banned items are never suggested as counters, and no counters by default', () => {
+  assert.deepEqual(generateBuild(defaultState()).counters, []);
+  const first = generateBuild(sanitizeState({ ...defaultState(), counters: ['flying'] }));
+  const top = first.counters[0].options[0].item.id;
+  const second = generateBuild(sanitizeState({ ...defaultState(), counters: ['flying'], banned: [top] }));
+  assert.ok(!second.counters[0].options.some((o) => o.item.id === top));
 });
 
 // Simulates a hacked share link: script tags, huge/negative/non-numeric
 // numbers, prototype-pollution keys, unknown ids, and an oversized hash.
 test('malicious / malformed input is rejected', () => {
-  const s = decodeState('#h=<script>&w=99999&s=-5&v=abc&p=__proto__.constructor.dps&g=evil&x=toString.glass_cannon');
+  const s = decodeState('#h=<script>&w=99999&s=-5&v=abc&p=__proto__.constructor.dps&g=evil&x=toString.glass_cannon&c=__proto__.flying.lasers');
+  assert.deepEqual(s.counters, ['flying']);
   assert.equal(s.hero, '');
   assert.equal(s.focus.weapon, 100);
   assert.equal(s.focus.spirit, 0);

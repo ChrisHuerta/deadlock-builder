@@ -10,6 +10,7 @@
 //     priorities: ['dps', 'sustain'],
 //     plan: 'balanced',                              // or 'early' / 'late'
 //     banned: ['glass_cannon'],                      // items removed with "Swap"
+//     counters: ['spirit', 'flying'],                // enemy threats to counter
 //   }
 //
 // Share links store this state in the part of the URL after '#' (the "hash"):
@@ -28,6 +29,7 @@
 import { ITEM_BY_ID } from './data/items.js';
 import { HERO_BY_ID } from './data/heroes.js';
 import { PRIORITY_BY_ID, GAME_PLAN_BY_ID } from './data/priorities.js';
+import { COUNTER_BY_ID } from './data/counters.js';
 
 const MAX_HASH_LENGTH = 2000;          // ignore absurdly long links
 const MAX_LIST = 64;                   // max entries read from any list
@@ -41,6 +43,7 @@ export function defaultState() {
     priorities: [],
     plan: 'balanced',
     banned: [],
+    counters: [],
   };
 }
 
@@ -88,6 +91,7 @@ export function sanitizeState(input) {
     priorities: cleanIdList(input.priorities, PRIORITY_BY_ID),
     plan: typeof input.plan === 'string' && GAME_PLAN_BY_ID.has(input.plan) ? input.plan : d.plan,
     banned: cleanIdList(input.banned, ITEM_BY_ID),
+    counters: cleanIdList(input.counters, COUNTER_BY_ID),
   };
 }
 
@@ -95,6 +99,7 @@ export function sanitizeState(input) {
  * State → short URL hash text (without the '#').
  * Keys are single letters to keep links short:
  *   h=hero  w/s/v=weapon/spirit/vitality  p=priorities  g=game plan  x=excluded items
+ *   c=counters
  * Lists are joined with '.' (ids never contain dots).
  * URLSearchParams handles URL-escaping, like urllib.parse.urlencode in Python.
  */
@@ -107,6 +112,7 @@ export function encodeState(state) {
   if (state.priorities.length) p.set('p', state.priorities.join('.'));
   if (state.plan !== 'balanced') p.set('g', state.plan);
   if (state.banned.length) p.set('x', state.banned.join('.'));
+  if (state.counters.length) p.set('c', state.counters.join('.'));
   return p.toString();
 }
 
@@ -133,5 +139,6 @@ export function decodeState(hash) {
     priorities: split('p'),
     plan: p.get('g') || 'balanced',
     banned: split('x'),
+    counters: split('c'),
   });
 }

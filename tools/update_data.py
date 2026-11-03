@@ -14,6 +14,7 @@ DATA FLOW
     data/manual/items.json    hand-edited: tags, description, "core" value per item
     data/manual/heroes.json   hand-edited: suggested sliders ("lean") + tags per hero
     data/manual/tags.json     hand-edited: every valid tag -> readable label
+    data/manual/counters.json hand-edited: counter items per enemy threat
              +
     data/api-snapshot/*.json  cleaned facts from the API (written by `fetch`)
              |
@@ -104,6 +105,10 @@ MAX_ITEMS = 400
 MAX_HEROES = 120
 
 DEFAULT_LEAN = {"weapon": 34, "spirit": 33, "vitality": 33}
+
+# Enemy threats the "Counter the enemy" section can target (order = UI order).
+COUNTER_THREATS = ("weapon", "spirit", "vitality", "flying")
+MAX_COUNTER_ITEMS = 20
 
 
 class DataError(Exception):
@@ -483,12 +488,65 @@ def _validate_snapshot(raw, what, limit, check):
     return out
 
 
-def merge(tags, manual_items, manual_heroes, snapshot):
+def load_counters() -> dict:
+    """Read and validate data/manual/counters.json.
+
+    Format: { threat_id: { "label", "hint", "items": [ {"id", "why"}, ... ] } }
+    Threat ids are fixed (COUNTER_THREATS). The order of "items" is the
+    priority order the site uses. Item ids are checked against the game in
+    merge(), so a removed item is reported instead of breaking the site."""
+    path = MANUAL_DIR / "counters.json"
+    if not path.exists():
+        return {}
+    raw = read_json(path)
+    if not isinstance(raw, dict):
+        raise DataError("data/manual/counters.json must be an object keyed by threat")
+    errors, out = [], {}
+    for threat, entry in raw.items():
+        where = f"counters.json[{threat!r}]"
+        if threat not in COUNTER_THREATS:
+            errors.append(f"{where}: unknown threat (allowed: {', '.join(COUNTER_THREATS)})")
+            continue
+        if not isinstance(entry, dict):
+            errors.append(f"{where}: must be an object")
+            continue
+        label, hint, items = entry.get("label"), entry.get("hint", ""), entry.get("items")
+        if not _safe_text(label, 40):
+            errors.append(f"{where}: label must be text up to 40 characters")
+        if not _safe_text(hint, 200, allow_empty=True):
+            errors.append(f"{where}: hint must be text up to 200 characters")
+        if not isinstance(items, list) or not 1 <= len(items) <= MAX_COUNTER_ITEMS:
+            errors.append(f"{where}: items must be a list of 1-{MAX_COUNTER_ITEMS} entries")
+            continue
+        clean, seen = [], set()
+        for n, it in enumerate(items):
+            if not isinstance(it, dict) or not valid_id(it.get("id")) or it["id"] in seen:
+                errors.append(f"{where}.items[{n}]: needs a unique valid item id")
+                continue
+            if not _safe_text(it.get("why"), 120):
+                errors.append(f"{where}.items[{n}]: 'why' must be text up to 120 characters")
+                continue
+            seen.add(it["id"])
+            clean.append({"id": it["id"], "why": it["why"]})
+        out[threat] = {"label": label, "hint": hint, "items": clean}
+    if errors:
+        raise DataError("Problems in data/manual/counters.json:\n  - " + "\n  - ".join(errors))
+    return out
+
+
+def _safe_text(value, max_len, allow_empty=False) -> bool:
+    """Plain text only: no control/invisible characters, no angle brackets."""
+    if not isinstance(value, str) or len(value) > max_len or (not value and not allow_empty):
+        return False
+    return not re.search(r"[\x00-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2066-\u2069<>]", value)
+
+
+def merge(tags, manual_items, manual_heroes, snapshot, counters=None):
     """Combine game facts (snapshot) with hand-written data. Returns
     (game_data, report) where report lists things needing attention."""
     report = {"items_missing_manual": [], "heroes_missing_manual": [],
               "manual_items_not_in_game": [], "manual_heroes_not_in_game": [],
-              "category_or_tier_changed": []}
+              "category_or_tier_changed": [], "counter_items_not_in_game": []}
 
     if snapshot is None:
         source = "manual"
@@ -531,9 +589,21 @@ def merge(tags, manual_items, manual_heroes, snapshot):
     report["manual_items_not_in_game"] = sorted(v["name"] for k, v in manual_items.items() if k not in game_ids)
     report["manual_heroes_not_in_game"] = sorted(v["name"] for k, v in manual_heroes.items() if k not in hero_ids)
 
+    # Counters: keep only items that exist in the game, in priority order.
+    counters_out = {}
+    for threat in COUNTER_THREATS:
+        entry = (counters or {}).get(threat)
+        if not entry:
+            continue
+        kept = [c for c in entry["items"] if c["id"] in game_ids]
+        report["counter_items_not_in_game"] += [f"{threat}: {c['id']}" for c in entry["items"] if c["id"] not in game_ids]
+        if kept:
+            counters_out[threat] = {"label": entry["label"], "hint": entry["hint"], "items": kept}
+
     items_out.sort(key=lambda i: (CATEGORIES.index(i["cat"]), i["tier"], i["name"]))
     heroes_out.sort(key=lambda h: h["name"])
-    game_data = {"version": 1, "source": source, "tags": tags, "items": items_out, "heroes": heroes_out}
+    game_data = {"version": 1, "source": source, "tags": tags, "items": items_out, "heroes": heroes_out,
+                 "counters": counters_out}
     return game_data, report
 
 
@@ -557,6 +627,7 @@ def print_report(report, warnings=()):
         "manual_heroes_not_in_game": "Heroes in data/manual not in the game (renamed or removed?)",
         "manual_items_not_in_game": "Items in data/manual not in the game (renamed or removed?)",
         "category_or_tier_changed": "Items whose category/tier changed in the game",
+        "counter_items_not_in_game": "Counter items in counters.json not in the game (fix or remove)",
     }
     for key, label in labels.items():
         if report[key]:
@@ -603,7 +674,7 @@ def add_stubs(report, snapshot) -> int:
 
 def cmd_build(_args) -> int:
     tags, items, heroes = load_manual()
-    game_data, report = merge(tags, items, heroes, load_snapshot())
+    game_data, report = merge(tags, items, heroes, load_snapshot(), load_counters())
     written = write_outputs(game_data)
     print(f"Built {len(game_data['items'])} items and {len(game_data['heroes'])} heroes ({game_data['source']}).")
     print_report(report)
@@ -613,7 +684,7 @@ def cmd_build(_args) -> int:
 
 def cmd_check(_args) -> int:
     tags, items, heroes = load_manual()
-    game_data, report = merge(tags, items, heroes, load_snapshot())
+    game_data, report = merge(tags, items, heroes, load_snapshot(), load_counters())
     print(f"Manual data OK: {len(items)} items, {len(heroes)} heroes, {len(tags)} tags.")
     print_report(report)
     stale = [p.relative_to(ROOT).as_posix() for p, t in ((OUT_JSON, dump(game_data)), (OUT_JS, render_js(game_data)))
@@ -638,7 +709,7 @@ def cmd_fetch(args) -> int:
     snapshot = (heroes, items, meta)
 
     tags, m_items, m_heroes = load_manual()
-    game_data, report = merge(tags, m_items, m_heroes, snapshot)
+    game_data, report = merge(tags, m_items, m_heroes, snapshot, load_counters())
     print(f"\nAPI: {len(heroes)} playable heroes, {len(items)} shop items.")
     print_report(report, hw + iw)
 
@@ -655,7 +726,7 @@ def cmd_fetch(args) -> int:
         n = add_stubs(report, snapshot)
         print(f"\nAdded {n} stub entries to data/manual/. Fill in their tags/lean, then run `build`.")
         tags, m_items, m_heroes = load_manual()
-        game_data, report = merge(tags, m_items, m_heroes, snapshot)
+        game_data, report = merge(tags, m_items, m_heroes, snapshot, load_counters())
 
     written = write_outputs(game_data)
     print("\nUpdated: " + ", ".join(written) if written else "\nGenerated files unchanged.")

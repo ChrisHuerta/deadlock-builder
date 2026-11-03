@@ -14,6 +14,9 @@ third-party scripts, so it can be hosted for free on **GitHub Pages**.
 - 17 toggleable playstyle priorities
 - Game plan: balanced, early aggression or late-game scaling
 - 12-slot build grouped by phase (lane → late) with soul costs and a reason for each pick
+- **Counter the enemy**: toggle heavy gun, heavy spirit, tanky or flying
+  enemies to get situational counter items in their own group, each with
+  the core item to sell for it
 - **Swap** any item to exclude it and get the next-best alternative
 - Shareable links (the whole build state lives in the URL hash)
 - Save builds locally (browser `localStorage`, never uploaded)
@@ -80,6 +83,11 @@ tests/                   Python + Node tests
 3. Each candidate item is scored from its tags. Tags get weight from the
    sliders (implicit), the selected priorities (strong) and the hero (mild).
    Tags that repeat are worth less each time, which keeps the build varied.
+4. Counter items (optional) come from the hand-picked lists in
+   `data/manual/counters.json`, shown in their priority order, with a nudge
+   toward your main focus. Each one suggests selling your cheapest,
+   lowest-value core item. Counters for different threats suggest selling
+   different items.
 
 ## Updating game data
 
@@ -97,8 +105,8 @@ python tools/update_data.py build
 git diff                                         # review what changed
 ```
 
-**Editing by hand** (tags, descriptions, hero sliders): edit
-`data/manual/items.json`, `heroes.json` or `tags.json`, then run
+**Editing by hand** (tags, descriptions, hero sliders, counter lists): edit
+`data/manual/items.json`, `heroes.json`, `tags.json` or `counters.json`, then run
 `python tools/update_data.py build`. Use `check` to validate without writing.
 
 **If the download fails** (API down, network blocked): open these URLs in your

@@ -1,0 +1,64 @@
+{
+  "weapon": {
+    "label": "Heavy gun damage",
+    "hint": "Enemies who build mostly weapon items and shred you with bullets.",
+    "items": [
+      { "id": "battle_vest", "why": "Cheap bullet resistance." },
+      { "id": "bullet_resilience", "why": "High bullet resistance, more at low health." },
+      { "id": "weapon_shielding", "why": "Barrier when you take a burst of bullet damage." },
+      { "id": "metal_skin", "why": "Active: nearly immune to bullets for a moment." },
+      { "id": "disarming_hex", "why": "Stops the target from shooting at all." },
+      { "id": "rusted_barrel", "why": "Lowers the shooter's fire rate." },
+      { "id": "juggernaut", "why": "Slows the fire rate of anyone shooting you." },
+      { "id": "plated_armor", "why": "Deflects incoming bullets." },
+      { "id": "return_fire", "why": "Reflects their bullet damage back at them." }
+    ]
+  },
+  "spirit": {
+    "label": "Heavy spirit damage",
+    "hint": "Enemies who build mostly spirit items and burst you with abilities.",
+    "items": [
+      { "id": "enchanters_emblem", "why": "Cheap spirit resistance." },
+      { "id": "spirit_resilience", "why": "High spirit resistance, more at low health." },
+      { "id": "spirit_shielding", "why": "Barrier when you take a burst of spirit damage." },
+      { "id": "spirit_sap", "why": "Lowers the caster's spirit power." },
+      { "id": "debuff_reducer", "why": "Shorter stuns, slows and silences." },
+      { "id": "dispel_magic", "why": "Active: remove their debuffs from you." },
+      { "id": "counterspell", "why": "Parry and block an incoming ability." },
+      { "id": "silence_wave", "why": "Silence casters so they can't use abilities." },
+      { "id": "spellbreaker", "why": "Less damage from big spirit hits." },
+      { "id": "unstoppable", "why": "Active: immune to their crowd control." },
+      { "id": "cursed_relic", "why": "Silence and disarm their main threat." }
+    ]
+  },
+  "vitality": {
+    "label": "Tanky enemies",
+    "hint": "Enemies with lots of health, resistances or healing who won't die.",
+    "items": [
+      { "id": "healbane", "why": "Cheap anti-heal on your spirit damage." },
+      { "id": "toxic_bullets", "why": "Anti-heal on your bullets." },
+      { "id": "decay", "why": "Anti-heal and damage over time." },
+      { "id": "tankbuster", "why": "Bonus damage based on their max health." },
+      { "id": "bullet_resist_shredder", "why": "Lowers their bullet resistance." },
+      { "id": "hollow_point", "why": "Your bullets lower their bullet resistance." },
+      { "id": "armor_piercer", "why": "Bullets ignore part of their resistance." },
+      { "id": "spirit_burn", "why": "Anti-heal on big spirit hits." },
+      { "id": "scourge", "why": "Aura damage based on their max health." },
+      { "id": "escalating_exposure", "why": "Stacking vulnerability to your spirit damage." },
+      { "id": "crippling_headshot", "why": "Headshots strip their resistances." },
+      { "id": "inhibitor", "why": "Reduces their damage and healing." }
+    ]
+  },
+  "flying": {
+    "label": "Flying heroes",
+    "hint": "Heroes who fight from the air (for example Vindicta's flight). Hard to hit and hard to reach.",
+    "items": [
+      { "id": "knockdown", "why": "Stuns and pulls an airborne target to the ground." },
+      { "id": "phantom_strike", "why": "Teleport straight to them, even in the air." },
+      { "id": "long_range", "why": "More damage against targets far away." },
+      { "id": "sharpshooter", "why": "Big long-range damage with zoom to track them." },
+      { "id": "express_shot", "why": "Faster bullets make moving targets easier to hit." },
+      { "id": "magic_carpet", "why": "Fly up and fight them in the air." }
+    ]
+  }
+}

@@ -26,6 +26,7 @@
 import { CATEGORIES, TIER_COST, ITEM_BY_ID, DATA_SOURCE } from './data/items.js';
 import { HEROES, HERO_BY_ID } from './data/heroes.js';
 import { PRIORITIES, GAME_PLANS } from './data/priorities.js';
+import { COUNTERS } from './data/counters.js';
 import { generateBuild, TOTAL_SLOTS } from './engine.js';
 import { defaultState, sanitizeState, encodeState, decodeState } from './state.js';
 import { loadSaved, saveBuild, deleteBuild, cleanName } from './storage.js';
@@ -124,6 +125,18 @@ function initControls() {
     planWrap.append(el('label', { for: `plan-${g.id}` }, input, el('span', {}, g.label)));
   }
 
+  // Counter chips: same pattern as priorities, one checkbox per enemy threat.
+  const counterWrap = $('counters');
+  for (const t of COUNTERS) {
+    const input = el('input', { type: 'checkbox', value: t.id, id: `counter-${t.id}` });
+    input.addEventListener('change', () => {
+      const set = new Set(state.counters);
+      if (input.checked) set.add(t.id); else set.delete(t.id);
+      update({ counters: COUNTERS.map((x) => x.id).filter((id) => set.has(id)) });
+    });
+    counterWrap.append(el('label', { class: 'chip', for: `counter-${t.id}`, title: t.hint }, input, el('span', {}, t.label)));
+  }
+
   // Remaining buttons.
   $('reset').addEventListener('click', () => { state = defaultState(); render(); });
   $('clear-banned').addEventListener('click', () => update({ banned: [] }));
@@ -152,6 +165,7 @@ function syncControls() {
   }
   for (const p of PRIORITIES) $(`prio-${p.id}`).checked = state.priorities.includes(p.id);
   for (const g of GAME_PLANS) $(`plan-${g.id}`).checked = state.plan === g.id;
+  for (const t of COUNTERS) $(`counter-${t.id}`).checked = state.counters.includes(t.id);
 }
 
 /**
@@ -202,6 +216,51 @@ function itemCard(pick) {
   );
 }
 
+/**
+ * One counter card. It looks like an item card but has a red "counter" border,
+ * explains WHY it counters the threat, and says which core item to sell.
+ */
+function counterCard(option) {
+  const { item, why, replace } = option;
+  const swap = el('button', { type: 'button', class: 'swap', title: `Exclude ${item.name} and suggest another counter`, 'aria-label': `Swap out ${item.name}` }, 'Swap');
+  swap.addEventListener('click', () => update({ banned: [...state.banned, item.id] }));
+
+  return el('li', { class: `item counter ${item.cat}` },
+    el('div', { class: 'item-top' },
+      el('span', { class: 'badge' }, CATEGORIES[item.cat].short),
+      el('strong', {}, item.name),
+      el('span', { class: 'cost' }, fmt(TIER_COST[item.tier])),
+    ),
+    el('p', { class: 'desc' }, why || item.desc),
+    el('p', { class: 'replace' },
+      ...(replace
+        ? ['Replace: ', el('strong', {}, replace.name), ` (${fmt(TIER_COST[replace.tier])})`]
+        : ['Use a free slot']),
+    ),
+    el('div', { class: 'item-foot' }, el('span', { class: 'why' }, `Tier ${item.tier} · ${CATEGORIES[item.cat].label}`), swap),
+  );
+}
+
+/** The "Counter items" group under the core build (only when a threat is selected). */
+function renderCounters(counters) {
+  if (!counters.length) { $('counter-results').replaceChildren(); return; }
+  const groups = counters.map((c) => el('div', { class: 'counter-group' },
+    el('h4', {}, `vs ${c.label}`),
+    c.hint ? el('p', { class: 'help' }, c.hint) : null,
+    c.alreadyHave.length
+      ? el('p', { class: 'have' }, `Already in your build: ${c.alreadyHave.map((i) => i.name).join(', ')}`)
+      : null,
+    c.options.length
+      ? el('ol', { class: 'items' }, ...c.options.map(counterCard))
+      : el('p', { class: 'help' }, 'No other counter items available. Clear excluded items to see more.'),
+  ));
+  $('counter-results').replaceChildren(el('section', { class: 'phase counters-phase' },
+    el('header', {}, el('h3', {}, 'Counter items', el('span', { class: 'tier' }, ' Situational'))),
+    el('p', { class: 'help' }, 'Not part of the 12-slot build. Buy one per threat when you need it, selling the suggested item.'),
+    ...groups,
+  ));
+}
+
 /** Draw the whole results panel from the engine's output. */
 function renderBuild(build) {
   const hero = HERO_BY_ID.get(state.hero);
@@ -226,6 +285,7 @@ function renderBuild(build) {
     );
   });
   $('phases').replaceChildren(...phases);
+  renderCounters(build.counters);
 
   // "Excluded:" row — click an item to allow it again.
   const bannedWrap = $('banned-wrap');

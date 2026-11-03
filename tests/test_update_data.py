@@ -41,7 +41,7 @@ class TestCleanName(unittest.TestCase):
 
     def test_rejects_dangerous_or_odd_names(self):
         for bad in ["<script>alert(1)</script>", "x" * 41, "", None, 42,
-                    "Evil‮Name", "Zero​Width", 'Quote"Name', "a/b", "{{x}}"]:
+                    "Evil\u202eName", "Zero\u200bWidth", 'Quote"Name', "a/b", "{{x}}"]:
             self.assertIsNone(ud.clean_name(bad), bad)
 
 
@@ -202,6 +202,39 @@ class TestSnapshot(unittest.TestCase):
                     [], "nope"]:
             with self.assertRaises(ud.DataError):
                 ud._validate_snapshot(bad, "items", 10, ud._snapshot_item)
+
+
+class TestCounters(unittest.TestCase):
+    def _load(self, data):
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "counters.json").write_text(json.dumps(data), encoding="utf-8")
+            old, ud.MANUAL_DIR = ud.MANUAL_DIR, Path(tmp)
+            try:
+                return ud.load_counters()
+            finally:
+                ud.MANUAL_DIR = old
+
+    def test_valid_counters_load(self):
+        out = self._load({"flying": {"label": "Fliers", "hint": "", "items": [{"id": "knockdown", "why": "Grounds them."}]}})
+        self.assertEqual(out["flying"]["items"][0]["id"], "knockdown")
+
+    def test_bad_counters_rejected(self):
+        for bad in [
+            {"lasers": {"label": "X", "items": [{"id": "a", "why": "b"}]}},                     # unknown threat
+            {"flying": {"label": "<b>X</b>", "items": [{"id": "a", "why": "b"}]}},              # markup in label
+            {"flying": {"label": "X", "items": [{"id": "__proto__", "why": "b"}]}},             # reserved id
+            {"flying": {"label": "X", "items": [{"id": "a", "why": "evil\u202etext"}]}},        # bidi trick
+            {"flying": {"label": "X", "items": []}},                                            # empty list
+        ]:
+            with self.assertRaises(ud.DataError, msg=str(bad)):
+                self._load(bad)
+
+    def test_merge_drops_counters_not_in_game(self):
+        counters = {"flying": {"label": "F", "hint": "", "items": [{"id": "knockdown", "why": "w"}, {"id": "gone", "why": "w"}]}}
+        snapshot = ([{"id": "haze", "name": "Haze"}], [{"id": "knockdown", "name": "Knockdown", "cat": "spirit", "tier": 3}], {})
+        data, report = ud.merge({"cc": "cc"}, {}, {}, snapshot, counters)
+        self.assertEqual([c["id"] for c in data["counters"]["flying"]["items"]], ["knockdown"])
+        self.assertEqual(report["counter_items_not_in_game"], ["flying: gone"])
 
 
 class TestRealProjectData(unittest.TestCase):
