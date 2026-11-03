@@ -39,6 +39,7 @@
 // characters instead of running anything.
 
 import { CATEGORIES, TIER_COST, ITEM_BY_ID, DATA_SOURCE } from './data/items.js';
+// (ITEM_BY_ID is also used to look up upgrade component names.)
 import { HEROES, HERO_BY_ID } from './data/heroes.js';
 import { PRIORITIES, GAME_PLANS } from './data/priorities.js';
 import { COUNTERS } from './data/counters.js';
@@ -300,6 +301,25 @@ function swapButton(key, item) {
 // ───────────────────────── Item and counter cards ─────────────────────────
 
 /**
+ * The upgrade-path line on an item card (or null if there's nothing to say).
+ *   Component in this build:  "Builds into: Headhunter (upgrade it later; no extra slot)"
+ *   Upgrade:                  "Upgrades from: Headshot Booster (in your build)"
+ *                             "Upgrades from: Long Range + High-Velocity Rounds"
+ */
+function upgradeLine(pick) {
+  if (pick.buildsInto) {
+    return el('p', { class: 'upgrade-line' },
+      'Builds into: ', el('strong', {}, pick.buildsInto.name), ' (upgrade it later; no extra slot)');
+  }
+  if (!pick.item.from.length) return null;
+  const owned = new Set(pick.upgradesFrom.map((c) => c.id));
+  const names = pick.item.from.map((c) => ITEM_BY_ID.get(c).name);
+  return el('p', { class: 'upgrade-line' },
+    'Upgrades from: ', el('strong', {}, names.join(' + ')),
+    owned.size ? ' (in your build)' : ' (buy it first to spread the cost)');
+}
+
+/**
  * One item card: badge, name, cost, description, "Fits: ..." reasons (or
  * "Your pick" if you chose it from a Swap list), Swap button, and the Swap
  * list itself when it's open.
@@ -309,14 +329,28 @@ function itemCard(pick) {
   // ≈ item, reasons, alternatives = pick["item"], pick["reasons"], pick["alternatives"]
   const { item, reasons, alternatives } = pick;
   const key = `core:${item.id}`;
+  const price = TIER_COST[item.tier];
 
-  return el('li', { class: `item ${item.cat}${openSwap === key ? ' swapping' : ''}` },
+  // Card layout, top to bottom:
+  //   row 1: [WPN] [UPGRADE] ............ price   ← badges left, price right
+  //   row 2: Item Name                            ← full width, may wrap
+  //   description, upgrade line, "Fits:" + Swap, (Swap list when open)
+  // The name gets its own row so long names can never overlap the price.
+  return el('li', { class: `item ${item.cat}${openSwap === key ? ' swapping' : ''}${pick.buildsInto ? ' component' : ''}` },
     el('div', { class: 'item-top' },
       el('span', { class: 'badge' }, CATEGORIES[item.cat].short),
-      el('strong', {}, item.name),
-      el('span', { class: 'cost' }, fmt(TIER_COST[item.tier])),
+      // Upgrade items get a small "UPGRADE" label next to the category badge.
+      item.from.length ? el('span', { class: 'badge upgrade' }, 'UPGRADE') : null,
+      // If you already own the component, show the full price crossed out
+      // followed by what you actually pay.
+      pick.effectiveCost < price
+        ? el('span', { class: 'cost', title: `${fmt(price)} minus the component you already own` },
+          el('s', {}, fmt(price)), ` ${fmt(pick.effectiveCost)}`)
+        : el('span', { class: 'cost' }, fmt(price)),
     ),
+    el('strong', { class: 'item-name' }, item.name),
     el('p', { class: 'desc' }, item.desc),
+    upgradeLine(pick),
     el('div', { class: 'item-foot' },
       pick.pinned
         ? el('span', { class: 'why pinned' }, 'Your pick')
@@ -338,11 +372,13 @@ function counterCard(option) {
   const key = `counter:${item.id}`;
 
   return el('li', { class: `item counter ${item.cat}${openSwap === key ? ' swapping' : ''}` },
+    // Same header layout as itemCard: badges + price, then the name on its own row.
     el('div', { class: 'item-top' },
       el('span', { class: 'badge' }, CATEGORIES[item.cat].short),
-      el('strong', {}, item.name),
+      item.from.length ? el('span', { class: 'badge upgrade' }, 'UPGRADE') : null,
       el('span', { class: 'cost' }, fmt(TIER_COST[item.tier])),
     ),
+    el('strong', { class: 'item-name' }, item.name),
     el('p', { class: 'desc' }, why || item.desc),
     // "Replace: X (cost)". The `...( ? [...] : [...])` spreads a list of
     // children into el(), since el() takes children as separate arguments.
@@ -383,15 +419,18 @@ function renderCounters(counters) {
 function renderBuild(build) {
   const hero = HERO_BY_ID.get(state.hero);
   $('build-title').textContent = hero ? `Recommended build: ${hero.name}` : 'Recommended build';
-  const count = build.phases.reduce((n, p) => n + p.items.length, 0);
-  $('build-summary').textContent = `${count}/${TOTAL_SLOTS} slots · ${fmt(build.totalCost)} souls total`;
+  // finalCount = items you end up holding (components that get upgraded
+  // don't count, because they turn into their upgrade).
+  $('build-summary').textContent = `${build.finalCount}/${TOTAL_SLOTS} slots · ${fmt(build.totalCost)} souls total`;
 
   renderDistribution(build.quotas);
 
   // One section per phase, with that phase's cost and the running total.
+  // effectiveCost = what you actually pay (upgrades are cheaper when you
+  // already own the component).
   let running = 0;
   const phases = build.phases.map((phase) => {
-    const cost = phase.items.reduce((s, p) => s + TIER_COST[p.item.tier], 0);
+    const cost = phase.items.reduce((s, p) => s + p.effectiveCost, 0);
     running += cost;
     return el('section', { class: 'phase' },
       el('header', {},

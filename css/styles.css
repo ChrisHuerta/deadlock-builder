@@ -43,7 +43,8 @@ body {
 }
 
 /* Centered content column: at most 1200px wide, with 16px gutters on small screens. */
-.wrap { width: min(1200px, 100% - 32px); margin-inline: auto; }
+/* Wide enough for 3-4 item cards per row next to the controls on big screens. */
+.wrap { width: min(1440px, 100% - 32px); margin-inline: auto; }
 
 /* Hide visually but keep readable by screen readers (used for some labels). */
 .sr-only {
@@ -178,10 +179,12 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .phase h3 { font-size: 1rem; }
 .phase-cost { color: var(--muted); font-size: .82rem; font-variant-numeric: tabular-nums; }
 
-/* Card grid: as many 230px+ columns as fit, so it reflows on any screen size. */
+/* Card grid: as many columns as fit, each at least 250px wide, so it reflows
+   on any screen size. min(250px, 100%) lets a single card shrink on tiny
+   phones instead of forcing sideways scrolling. */
 .items {
   list-style: none; padding: 0; margin: 10px 0 0;
-  display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
 }
 /* Item card. --c is a per-card variable holding its category color; the
    .weapon/.spirit/.vitality classes below set it, and the left border and
@@ -198,10 +201,26 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .item.weapon { --c: var(--weapon); }
 .item.spirit { --c: var(--spirit); }
 .item.vitality { --c: var(--vitality); }
-.item-top { display: flex; align-items: center; gap: 8px; }
-.item-top strong { flex: 1; min-width: 0; }
+/* Card header row: badges on the left, price pushed to the right by
+   margin-left: auto. nowrap keeps "3,200 2,400" on one line, and flex-wrap
+   lets the row break safely on a very narrow card instead of overlapping. */
+.item-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.item-top .cost { margin-left: auto; white-space: nowrap; }
+/* The item name gets its own full-width line, so it never collides with the
+   price. overflow-wrap lets an unusually long name break instead of spilling. */
+.item-name { display: block; font-size: 1rem; line-height: 1.25; overflow-wrap: anywhere; }
 .badge { font-size: .68rem; font-weight: 800; letter-spacing: .05em; color: #120f0b; background: var(--c); border-radius: 4px; padding: 1px 5px; }
-.cost { color: var(--accent); font-size: .85rem; font-variant-numeric: tabular-nums; }
+/* Prices never break across lines (also used in the Swap list). */
+.cost { color: var(--accent); font-size: .85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Crossed-out full price when you already own an upgrade's component. */
+.cost s { color: var(--muted); }
+
+/* Upgrade paths: gold "UPGRADE" label, the "Upgrades from / Builds into"
+   line, and a dashed border on components that get used up later. */
+.badge.upgrade { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.upgrade-line { margin: 0; font-size: .8rem; color: var(--muted); }
+.upgrade-line strong { color: var(--accent); font-weight: 600; }
+.item.component { border-style: dashed; border-left-style: solid; }
 .desc { margin: 0; color: var(--muted); font-size: .86rem; flex: 1; }
 .item-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .why { font-size: .78rem; color: var(--text); opacity: .8; }

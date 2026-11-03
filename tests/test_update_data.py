@@ -124,6 +124,23 @@ class TestParseItems(unittest.TestCase):
         self.assertNotIn("cost", next(i for i in items if i["id"] == "bad_cost"))
         self.assertEqual(len(warnings), 3)  # weird tier, weird slot, tier-5 summary
 
+    def test_upgrade_paths_resolve_to_our_ids(self):
+        items, warnings = ud.parse_api_items([
+            item("Headshot Booster", tier=1, class_name="upgrade_headshot_booster"),
+            item("Long Range", tier=2, class_name="upgrade_long_range"),
+            item("Headhunter", tier=3, class_name="upgrade_headhunter",
+                 component_items=["upgrade_headshot_booster"]),
+            item("Sharpshooter", tier=3, class_name="upgrade_sharpshooter",
+                 component_items=["upgrade_long_range", "upgrade_unknown", "<script>"]),
+            item("Backwards", tier=1, class_name="upgrade_backwards",
+                 component_items=["upgrade_headhunter"]),          # higher tier: ignored
+        ])
+        by = {i["id"]: i for i in items}
+        self.assertEqual(by["headhunter"]["from"], ["headshot_booster"])
+        self.assertEqual(by["sharpshooter"]["from"], ["long_range"])   # unknown/bad names dropped
+        self.assertNotIn("from", by["backwards"])
+        self.assertTrue(any("odd upgrade path" in w for w in warnings))
+
     def test_boolean_is_not_a_tier(self):
         self.assertIsNone(ud._parse_tier(True))
 
@@ -210,8 +227,21 @@ class TestSnapshot(unittest.TestCase):
         self.assertEqual(ud._validate_snapshot(heroes, "heroes", 10, ud._snapshot_hero), heroes)
         self.assertEqual(ud._validate_snapshot(items, "items", 10, ud._snapshot_item), items)
 
+    def test_merge_keeps_only_valid_upgrade_paths(self):
+        snapshot = ([{"id": "haze", "name": "Haze"}], [
+            {"id": "a", "name": "A", "cat": "weapon", "tier": 1},
+            {"id": "b", "name": "B", "cat": "weapon", "tier": 3, "from": ["a", "gone"]},
+            {"id": "c", "name": "C", "cat": "weapon", "tier": 1, "from": ["b"]},   # higher tier: dropped
+        ], {})
+        data, _ = ud.merge({"dps": "d"}, {}, {}, snapshot)
+        by = {i["id"]: i for i in data["items"]}
+        self.assertEqual(by["b"]["from"], ["a"])
+        self.assertNotIn("from", by["c"])
+
     def test_tampered_snapshot_is_rejected(self):
         for bad in [[{"id": "x", "name": "<b>", "cat": "weapon", "tier": 1}],
+                    [{"id": "x", "name": "X", "cat": "weapon", "tier": 2, "from": ["__proto__"]}],
+                    [{"id": "x", "name": "X", "cat": "weapon", "tier": 2, "from": "a"}],
                     [{"id": "__proto__", "name": "X", "cat": "weapon", "tier": 1}],
                     [{"id": "x", "name": "X", "cat": "weapon", "tier": 5}],
                     [], "nope"]:

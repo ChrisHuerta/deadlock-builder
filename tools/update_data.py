@@ -106,6 +106,10 @@ MAX_HEROES = 120
 
 DEFAULT_LEAN = {"weapon": 34, "spirit": 33, "vitality": 33}
 
+# Upgrade paths: API class names look like "upgrade_headshot_booster".
+CLASS_NAME_RE = re.compile(r"^[a-z0-9_]{1,80}$")
+MAX_COMPONENTS = 3   # no real item has more than 2
+
 # Enemy threats the "Counter the enemy" section can target (order = UI order).
 COUNTER_THREATS = ("weapon", "spirit", "vitality", "flying")
 MAX_COUNTER_ITEMS = 20
@@ -353,11 +357,19 @@ def _parse_tier(value) -> int | None:
 
 
 def parse_api_items(payload) -> tuple[list[dict], list[str]]:
-    """Return (items, warnings). Keeps only items you can buy in the shop."""
+    """Return (items, warnings). Keeps only items you can buy in the shop.
+
+    Upgrade paths: the API lists each item's components in `component_items`
+    as internal class names (e.g. "upgrade_headshot_booster"). We translate
+    those into our own ids and store them as `from`, e.g. Headhunter gets
+    from = ["headshot_booster"]. Components must be a LOWER tier than the
+    upgrade; that rule also makes loops (A from B from A) impossible."""
     raw = _as_list(payload, "items")
     if len(raw) > MAX_ITEMS * 5:
         raise DataError(f"API returned {len(raw)} items, more than the sanity limit")
     items, warnings, seen = [], [], set()
+    class_to_id = {}        # API class name -> our id, for resolving components
+    pending_from = {}       # our id -> list of component class names
     skipped_tier5 = 0
     for entry in raw:
         if not isinstance(entry, dict):
@@ -390,7 +402,32 @@ def parse_api_items(payload) -> tuple[list[dict], list[str]]:
         item = {"id": iid, "name": name, "cat": cat, "tier": tier}
         if isinstance(cost, int) and not isinstance(cost, bool) and 0 < cost <= 100_000:
             item["cost"] = cost
+        # Remember the class name and components; resolved after the loop,
+        # once every item's id is known. Anything not a plain short
+        # identifier is ignored.
+        cls = entry.get("class_name")
+        if isinstance(cls, str) and CLASS_NAME_RE.match(cls):
+            class_to_id[cls] = iid
+        comps = entry.get("component_items")
+        if isinstance(comps, list):
+            pending_from[iid] = [c for c in comps[:MAX_COMPONENTS] if isinstance(c, str) and CLASS_NAME_RE.match(c)]
         items.append(item)
+
+    # Resolve component class names into our ids ("upgrades from").
+    by_id = {i["id"]: i for i in items}
+    for iid, comps in pending_from.items():
+        resolved = []
+        for c in comps:
+            cid = class_to_id.get(c)
+            if cid is None or cid == iid or cid in resolved:
+                continue   # component isn't a shop item we kept (or is a duplicate)
+            if by_id[cid]["tier"] >= by_id[iid]["tier"]:
+                warnings.append(f"Ignored odd upgrade path: {by_id[iid]['name']} from {by_id[cid]['name']} (same or higher tier)")
+                continue
+            resolved.append(cid)
+        if resolved:
+            by_id[iid]["from"] = resolved
+
     if skipped_tier5:
         warnings.append(f"Left out {skipped_tier5} tier-5 items (not in the normal shop)")
     if not items:
@@ -516,6 +553,13 @@ def _snapshot_item(e) -> dict | None:
     cost = e.get("cost")
     if isinstance(cost, int) and not isinstance(cost, bool) and 0 < cost <= 100_000:
         out["cost"] = cost
+    # Optional upgrade path: a short list of component ids. (Whether they
+    # exist and are a lower tier is checked in merge(), which sees all items.)
+    if "from" in e:
+        frm = e["from"]
+        if not isinstance(frm, list) or not 1 <= len(frm) <= MAX_COMPONENTS or not all(valid_id(x) for x in frm):
+            return None
+        out["from"] = list(frm)
     return out
 
 
@@ -610,12 +654,23 @@ def merge(tags, manual_items, manual_heroes, snapshot, counters=None):
         elif (m.get("cat"), m.get("tier")) != (a["cat"], a["tier"]):
             report["category_or_tier_changed"].append(
                 f"{a['name']}: manual {m.get('cat')}/T{m.get('tier')} -> game {a['cat']}/T{a['tier']}")
-        items_out.append({
+        out = {
             "id": a["id"], "name": a["name"], "cat": a["cat"], "tier": a["tier"],
             "tags": list(m.get("tags", [])),
             "desc": m.get("desc") or "No description yet.",
             "core": m.get("core", 1),
-        })
+        }
+        if a.get("from"):
+            out["from"] = list(a["from"])   # filtered below once all items are known
+        items_out.append(out)
+
+    # Upgrade paths: keep only components that exist and are a lower tier.
+    tier_of = {i["id"]: i["tier"] for i in items_out}
+    for i in items_out:
+        if "from" in i:
+            i["from"] = [c for c in i["from"] if c in tier_of and tier_of[c] < i["tier"]]
+            if not i["from"]:
+                del i["from"]
 
     heroes_out = []
     for a in api_heroes:

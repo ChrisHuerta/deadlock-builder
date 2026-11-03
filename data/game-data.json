@@ -166,7 +166,10 @@
         "stamina"
       ],
       "desc": "Dash-jumping grants a burst of fire rate and bonus ammo.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extra_stamina"
+      ]
     },
     {
       "id": "long_range",
@@ -214,7 +217,10 @@
         "dps"
       ],
       "desc": "Extra damage against targets at high health.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "high_velocity_rounds"
+      ]
     },
     {
       "id": "recharging_rush",
@@ -289,7 +295,10 @@
         "dps"
       ],
       "desc": "Big fire rate boost at the cost of some bullet resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "rapid_rounds"
+      ]
     },
     {
       "id": "titanic_magazine",
@@ -301,7 +310,10 @@
         "dps"
       ],
       "desc": "A huge magazine size increase.",
-      "core": 1.2
+      "core": 1.2,
+      "from": [
+        "extended_magazine"
+      ]
     },
     {
       "id": "weakening_headshot",
@@ -339,7 +351,10 @@
         "duration"
       ],
       "desc": "Using abilities grants stacking weapon damage; also more ability range and duration.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "mystic_expansion"
+      ]
     },
     {
       "id": "berserker",
@@ -376,7 +391,10 @@
         "mobility"
       ],
       "desc": "Damaging heroes gives fire rate and move speed.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "rapid_rounds"
+      ]
     },
     {
       "id": "cultist_sacrifice",
@@ -388,7 +406,10 @@
         "hp"
       ],
       "desc": "Bonus weapon damage and bullet resistance against troopers and camps; helps you farm.",
-      "core": 0.9
+      "core": 0.9,
+      "from": [
+        "monster_rounds"
+      ]
     },
     {
       "id": "escalating_resilience",
@@ -400,7 +421,10 @@
         "dps"
       ],
       "desc": "Shooting enemies builds up bullet resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extended_magazine"
+      ]
     },
     {
       "id": "express_shot",
@@ -413,7 +437,10 @@
         "dps"
       ],
       "desc": "Faster bullets; periodically a shot deals big bonus damage.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "high_velocity_rounds"
+      ]
     },
     {
       "id": "headhunter",
@@ -426,7 +453,10 @@
         "burst"
       ],
       "desc": "Headshots deal bonus damage and heal you.",
-      "core": 1.2
+      "core": 1.2,
+      "from": [
+        "headshot_booster"
+      ]
     },
     {
       "id": "heroic_aura",
@@ -477,7 +507,10 @@
         "cc"
       ],
       "desc": "Bonus damage and a slow against close targets.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "close_quarters"
+      ]
     },
     {
       "id": "shadow_weave",
@@ -490,7 +523,10 @@
         "mobility"
       ],
       "desc": "Turn invisible; breaking stealth grants bonus damage.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "sprint_boots"
+      ]
     },
     {
       "id": "sharpshooter",
@@ -502,7 +538,11 @@
         "headshot"
       ],
       "desc": "Large damage bonus at long range, with zoom.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "long_range",
+        "high_velocity_rounds"
+      ]
     },
     {
       "id": "spirit_rend",
@@ -515,7 +555,10 @@
         "spirit_power"
       ],
       "desc": "Bullets stack up to lower enemy spirit resistance; abilities heal you.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "spirit_shredder"
+      ]
     },
     {
       "id": "tesla_bullets",
@@ -552,7 +595,10 @@
         "dps"
       ],
       "desc": "Weapon damage; repeated hits slow the target.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "slowing_bullets"
+      ]
     },
     {
       "id": "armor_piercer",
@@ -565,7 +611,10 @@
         "anti_tank"
       ],
       "desc": "Faster bullets with a chance to ignore part of enemy bullet resistance.",
-      "core": 1.1
+      "core": 1.1,
+      "from": [
+        "high_velocity_rounds"
+      ]
     },
     {
       "id": "capacitor",
@@ -579,7 +628,10 @@
         "fire_rate"
       ],
       "desc": "Fire rate; shots can chain lightning between enemies and slow them.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "tesla_bullets"
+      ]
     },
     {
       "id": "crippling_headshot",
@@ -591,7 +643,10 @@
         "debuff"
       ],
       "desc": "Headshots strip enemy resistances.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "weakening_headshot"
+      ]
     },
     {
       "id": "crushing_fists",
@@ -605,7 +660,10 @@
         "bullet_armor"
       ],
       "desc": "Much stronger melee; heavy melee stuns and lowers enemy bullet resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "melee_charge"
+      ]
     },
     {
       "id": "frenzy",
@@ -691,7 +749,10 @@
         "fire_rate"
       ],
       "desc": "Sustained shooting grants spirit power and cooldown reduction.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "spirit_lifesteal"
+      ]
     },
     {
       "id": "extra_health",
@@ -845,7 +906,10 @@
         "mobility"
       ],
       "desc": "Move speed and resistance to slows.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "sprint_boots"
+      ]
     },
     {
       "id": "guardian_ward",
@@ -858,7 +922,10 @@
         "mobility"
       ],
       "desc": "Active: give an ally a barrier and move speed.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "grit"
+      ]
     },
     {
       "id": "healbane",
@@ -892,7 +959,10 @@
         "shield"
       ],
       "desc": "Automatic barrier when you get stunned or immobilized.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "grit"
+      ]
     },
     {
       "id": "restorative_locket",
@@ -940,7 +1010,10 @@
         "spirit_armor"
       ],
       "desc": "A barrier when you take heavy spirit damage, plus spirit resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "grit"
+      ]
     },
     {
       "id": "trophy_collector",
@@ -953,7 +1026,10 @@
         "ability_range"
       ],
       "desc": "Stacks up over time to give sprint speed, ability range and extra souls.",
-      "core": 0.9
+      "core": 0.9,
+      "from": [
+        "sprint_boots"
+      ]
     },
     {
       "id": "weapon_shielding",
@@ -965,7 +1041,10 @@
         "bullet_armor"
       ],
       "desc": "A barrier when you take heavy bullet damage, plus bullet resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "grit"
+      ]
     },
     {
       "id": "bullet_resilience",
@@ -1014,7 +1093,10 @@
         "regen"
       ],
       "desc": "Big health pool and fast regen when not taking damage.",
-      "core": 1.2
+      "core": 1.2,
+      "from": [
+        "extra_health"
+      ]
     },
     {
       "id": "fury_trance",
@@ -1028,7 +1110,10 @@
         "hp"
       ],
       "desc": "Active: a burst of fire rate and move speed. Also gives bullet lifesteal and health.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "bullet_lifesteal"
+      ]
     },
     {
       "id": "healing_nova",
@@ -1040,7 +1125,10 @@
         "regen"
       ],
       "desc": "Active: heal yourself and nearby allies.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "healing_rite"
+      ]
     },
     {
       "id": "lifestrike",
@@ -1053,7 +1141,10 @@
         "cc"
       ],
       "desc": "Heavy melee heals you and slows the target.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "melee_lifesteal"
+      ]
     },
     {
       "id": "majestic_leap",
@@ -1089,7 +1180,10 @@
         "regen"
       ],
       "desc": "Active: heal an ally and pull them toward you.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "healing_rite"
+      ]
     },
     {
       "id": "spirit_resilience",
@@ -1112,7 +1206,10 @@
         "mobility"
       ],
       "desc": "More stamina, faster stamina recovery and better air control.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extra_stamina"
+      ]
     },
     {
       "id": "veil_walker",
@@ -1163,7 +1260,10 @@
         "hp"
       ],
       "desc": "Active: grow huge, gain resistances and slow nearby enemies.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extra_health"
+      ]
     },
     {
       "id": "divine_barrier",
@@ -1175,7 +1275,10 @@
         "team"
       ],
       "desc": "Active: shield yourself or an ally.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "guardian_ward"
+      ]
     },
     {
       "id": "diviners_kevlar",
@@ -1200,7 +1303,10 @@
         "mobility"
       ],
       "desc": "Healing you cast or receive grants fire rate and move speed; better regen.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "healing_booster"
+      ]
     },
     {
       "id": "indomitable",
@@ -1213,7 +1319,10 @@
         "shield"
       ],
       "desc": "Bullet and spirit resistance plus a periodic barrier.",
-      "core": 1.1
+      "core": 1.1,
+      "from": [
+        "reactive_barrier"
+      ]
     },
     {
       "id": "infuser",
@@ -1227,7 +1336,10 @@
         "spirit_armor"
       ],
       "desc": "Active: temporary spirit power and spirit lifesteal. Also gives health and spirit resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "spirit_lifesteal"
+      ]
     },
     {
       "id": "inhibitor",
@@ -1253,7 +1365,10 @@
         "regen"
       ],
       "desc": "Resist slows and regenerate health; enemies who hit you get their fire rate slowed.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "enduring_speed"
+      ]
     },
     {
       "id": "leech",
@@ -1266,7 +1381,11 @@
         "hp"
       ],
       "desc": "Massive bullet and spirit lifesteal.",
-      "core": 1.2
+      "core": 1.2,
+      "from": [
+        "bullet_lifesteal",
+        "spirit_lifesteal"
+      ]
     },
     {
       "id": "phantom_strike",
@@ -1317,7 +1436,10 @@
         "hp"
       ],
       "desc": "Spirit resistance, status resistance and less damage from big spirit hits.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "debuff_reducer"
+      ]
     },
     {
       "id": "unstoppable",
@@ -1329,7 +1451,10 @@
         "escape"
       ],
       "desc": "Active: immune to stuns and most crowd control.",
-      "core": 1.1
+      "core": 1.1,
+      "from": [
+        "debuff_reducer"
+      ]
     },
     {
       "id": "vampiric_burst",
@@ -1343,7 +1468,10 @@
         "bullet_armor"
       ],
       "desc": "Active: a burst of fire rate and bullet lifesteal. Also gives health and bullet resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "bullet_lifesteal"
+      ]
     },
     {
       "id": "witchmail",
@@ -1462,7 +1590,10 @@
         "spirit_power"
       ],
       "desc": "More stamina; dashing empowers your next ability with extra range and duration.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extra_stamina"
+      ]
     },
     {
       "id": "bullet_resist_shredder",
@@ -1519,7 +1650,10 @@
         "spirit_power"
       ],
       "desc": "Large spirit power boost.",
-      "core": 1.3
+      "core": 1.3,
+      "from": [
+        "extra_spirit"
+      ]
     },
     {
       "id": "mystic_slow",
@@ -1614,7 +1748,10 @@
         "hp"
       ],
       "desc": "Active: disarm a target so they can't shoot, and lower their bullet resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "rusted_barrel"
+      ]
     },
     {
       "id": "greater_expansion",
@@ -1626,7 +1763,10 @@
         "spirit_armor"
       ],
       "desc": "Much larger ability range, plus spirit resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "mystic_expansion"
+      ]
     },
     {
       "id": "knockdown",
@@ -1650,7 +1790,10 @@
         "mobility"
       ],
       "desc": "Casting abilities heals you over time and gives move speed.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "mystic_regeneration"
+      ]
     },
     {
       "id": "rapid_recharge",
@@ -1662,7 +1805,10 @@
         "cooldown"
       ],
       "desc": "Faster charge recovery and extra charges.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extra_charge"
+      ]
     },
     {
       "id": "silence_wave",
@@ -1687,7 +1833,10 @@
         "spirit_armor"
       ],
       "desc": "Melee hits deal bonus spirit damage and grant you spirit power and spirit resistance.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "spirit_strike"
+      ]
     },
     {
       "id": "superior_cooldown",
@@ -1698,7 +1847,10 @@
         "cooldown"
       ],
       "desc": "Significant cooldown reduction.",
-      "core": 1.2
+      "core": 1.2,
+      "from": [
+        "compress_cooldown"
+      ]
     },
     {
       "id": "superior_duration",
@@ -1709,7 +1861,10 @@
         "duration"
       ],
       "desc": "Abilities last much longer.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "duration_extender"
+      ]
     },
     {
       "id": "surge_of_power",
@@ -1721,7 +1876,10 @@
         "mobility"
       ],
       "desc": "Imbue an ability: casting it grants speed and fire rate.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "extra_spirit"
+      ]
     },
     {
       "id": "tankbuster",
@@ -1733,7 +1891,10 @@
         "anti_tank"
       ],
       "desc": "Bonus damage scaling with the target's max health.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "mystic_burst"
+      ]
     },
     {
       "id": "torment_pulse",
@@ -1758,7 +1919,10 @@
         "spirit_armor"
       ],
       "desc": "Active: a freezing blast that damages and freezes nearby enemies.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "cold_front"
+      ]
     },
     {
       "id": "boundless_spirit",
@@ -1770,7 +1934,10 @@
         "hp"
       ],
       "desc": "Huge spirit power and extra health.",
-      "core": 1.3
+      "core": 1.3,
+      "from": [
+        "improved_spirit"
+      ]
     },
     {
       "id": "cursed_relic",
@@ -1806,7 +1973,10 @@
         "spirit_power"
       ],
       "desc": "Your spirit damage stacks increasing vulnerability.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "mystic_vulnerability"
+      ]
     },
     {
       "id": "ethereal_shift",
@@ -1830,7 +2000,10 @@
         "burst"
       ],
       "desc": "Active: lower a target's spirit resistance and spirit power and briefly silence them. Also gives fire rate.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "spirit_sap"
+      ]
     },
     {
       "id": "lightning_scroll",
@@ -1843,7 +2016,10 @@
         "hp"
       ],
       "desc": "Hits a target with a delayed stun, bonus damage and a slow. Also gives health and sprint speed.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "mystic_slow"
+      ]
     },
     {
       "id": "magic_carpet",
@@ -1868,7 +2044,10 @@
         "burst"
       ],
       "desc": "Spirit power, a bigger magazine and fire rate; bullets deal bonus spirit damage.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "quicksilver_reload"
+      ]
     },
     {
       "id": "mystic_reverb",
@@ -1930,7 +2109,10 @@
         "cooldown"
       ],
       "desc": "Massive cooldown reduction.",
-      "core": 1
+      "core": 1,
+      "from": [
+        "superior_cooldown"
+      ]
     },
     {
       "id": "vortex_web",
@@ -1942,7 +2124,10 @@
         "ability_range"
       ],
       "desc": "Active: throw a web that pulls in and immobilizes enemies caught in it.",
-      "core": 1.1
+      "core": 1.1,
+      "from": [
+        "slowing_hex"
+      ]
     }
   ],
   "heroes": [

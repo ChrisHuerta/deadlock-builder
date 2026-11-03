@@ -9,11 +9,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { generateBuild, allocateSlots, normalizeFocus, TOTAL_SLOTS } from '../js/engine.js';
 import { defaultState, sanitizeState, encodeState, decodeState } from '../js/state.js';
-import { ITEMS } from '../js/data/items.js';
+import { ITEMS, TIER_COST } from '../js/data/items.js';
 import { HEROES } from '../js/data/heroes.js';
 import { PRIORITIES, TAG_LABELS } from '../js/data/priorities.js';
 
-const allIds = (b) => b.phases.flatMap((p) => p.items.map((i) => i.item.id));
+// Ids of the FINAL build: the items you end up holding. Components that get
+// upgraded (pick.buildsInto) are left out, because they turn into their upgrade.
+const allIds = (b) => b.phases.flatMap((p) => p.items.filter((i) => !i.buildsInto).map((i) => i.item.id));
+// Ids of everything you buy along the way, components included.
+const boughtIds = (b) => b.phases.flatMap((p) => p.items.map((i) => i.item.id));
 
 test('item, hero and priority ids are unique and well-formed', () => {
   for (const list of [ITEMS, HEROES, PRIORITIES]) {
@@ -66,7 +70,7 @@ test('counters stay outside the core build and suggest sensible replacements', (
   for (const threat of b.counters) {
     assert.ok(threat.options.length > 0 && threat.options.length <= 3, `${threat.id} has 1-3 options`);
     for (const o of threat.options) {
-      assert.ok(!core.includes(o.item.id), `${o.item.name} is not already in the core build`);
+      assert.ok(!boughtIds(b).includes(o.item.id), `${o.item.name} is not already bought in the build`);
       assert.ok(!seen.has(o.item.id), `${o.item.name} is not suggested for two threats`);
       seen.add(o.item.id);
       assert.ok(o.replace && core.includes(o.replace.id), 'replacement is a core build item');
@@ -99,7 +103,7 @@ test('every item offers up to 4 swap alternatives that are not already in the bu
   for (const p of b.phases.flatMap((ph) => ph.items)) {
     assert.ok(p.alternatives.length > 0 && p.alternatives.length <= 4, `${p.item.name} has 1-4 alternatives`);
     for (const a of p.alternatives) {
-      assert.ok(!core.includes(a.item.id), `${a.item.name} is not already in the build`);
+      assert.ok(!boughtIds(b).includes(a.item.id), `${a.item.name} is not already in the build`);
       assert.equal(a.item.cat, p.item.cat, 'alternative is the same category');
     }
   }
@@ -131,6 +135,45 @@ test('choosing a counter alternative shows that counter', () => {
 test('an item cannot be both excluded and pinned', () => {
   const s = sanitizeState({ ...defaultState(), banned: ['ricochet'], pinned: ['ricochet', 'glass_cannon'] });
   assert.deepEqual(s.pinned, ['glass_cannon']);
+});
+
+test('upgrade data: every `from` points at a real, lower-tier item', () => {
+  const upgrades = ITEMS.filter((it) => it.from.length);
+  assert.ok(upgrades.length > 30, 'upgrade paths loaded');
+  for (const it of upgrades) {
+    for (const c of it.from) {
+      const comp = ITEMS.find((x) => x.id === c);
+      assert.ok(comp && comp.tier < it.tier, `${it.name} upgrades from a cheaper ${c}`);
+    }
+  }
+});
+
+test('components used by an upgrade free their slot and are not double-charged', () => {
+  for (const s of [
+    { hero: 'haze', focus: { weapon: 60, spirit: 10, vitality: 30 }, priorities: ['headshots'] },
+    { hero: 'lady_geist', focus: { weapon: 10, spirit: 55, vitality: 35 }, priorities: ['abilities'] },
+    defaultState(),
+  ]) {
+    const b = generateBuild(sanitizeState(s));
+    const picks = b.phases.flatMap((p) => p.items);
+    const components = picks.filter((p) => p.buildsInto);
+    assert.equal(b.finalCount, 12, 'still 12 final items');
+    assert.equal(picks.length, 12 + components.length, 'one extra pick per used-up component');
+    for (const c of components) {
+      const up = picks.find((p) => p.item === c.buildsInto);
+      assert.ok(up && up.item.from.includes(c.item.id), `${c.item.name} really upgrades into ${c.buildsInto.name}`);
+    }
+    // Total paid = full price of the 12 final items (components count toward upgrades).
+    const finalPrice = picks.filter((p) => !p.buildsInto).reduce((n, p) => n + TIER_COST[p.item.tier], 0);
+    assert.equal(b.totalCost, finalPrice);
+  }
+});
+
+test('counters never suggest selling a component that becomes an upgrade', () => {
+  const b = generateBuild(sanitizeState({ hero: 'haze', focus: { weapon: 60, spirit: 10, vitality: 30 }, priorities: ['headshots'], counters: ['spirit', 'weapon', 'vitality', 'flying'] }));
+  const components = new Set(b.phases.flatMap((p) => p.items).filter((p) => p.buildsInto).map((p) => p.item.id));
+  assert.ok(components.size > 0, 'this build has at least one component');
+  for (const t of b.counters) for (const o of t.options) assert.ok(!components.has(o.replace.id));
 });
 
 // Simulates a hacked share link: script tags, huge/negative/non-numeric

@@ -10,7 +10,13 @@
 // unexpected reaches the page), and exports read-only lists.
 //
 // Each item: { id, name, cat: 'weapon'|'vitality'|'spirit', tier: 1-4,
-//              tags: [...], desc, core: 0-3 (baseline "generally good" value) }
+//              tags: [...], desc, core: 0-3 (baseline "generally good" value),
+//              from: [ids] }
+//
+// `from` lists the item's components (its upgrade path), e.g. Headhunter has
+// from: ['headshot_booster']. It's empty for items that aren't upgrades. In
+// the game, the component's cost counts toward the upgrade and the component
+// is used up, so it doesn't take a slot of its own once you upgrade.
 
 import GAME_DATA from './game-data.js';
 import { TAG_LABELS } from './priorities.js';
@@ -46,15 +52,24 @@ function validItem(raw) {
     tags: Object.freeze(tags.filter((t) => TAG_LABELS.has(t)).slice(0, 8)),
     desc: typeof desc === 'string' ? desc.slice(0, 300) : '',
     core: typeof core === 'number' && core >= 0 && core <= 3 ? core : 1,
+    // Checked properly below, once all items are known.
+    from: Array.isArray(raw.from) ? raw.from.filter((c) => typeof c === 'string' && ID_RE.test(c)).slice(0, 3) : [],
   });
 }
 
+// First pass: validate each item on its own.
 const seen = new Set();
-export const ITEMS = Object.freeze(
-  (Array.isArray(GAME_DATA.items) ? GAME_DATA.items : [])
-    .map(validItem)
-    .filter((it) => it && !seen.has(it.id) && seen.add(it.id)),
-);
+const firstPass = (Array.isArray(GAME_DATA.items) ? GAME_DATA.items : [])
+  .map(validItem)
+  .filter((it) => it && !seen.has(it.id) && seen.add(it.id));
+
+// Second pass: keep only upgrade components that exist and are a LOWER tier.
+// The lower-tier rule also guarantees there are no loops (A from B from A).
+const tierOf = new Map(firstPass.map((it) => [it.id, it.tier]));
+export const ITEMS = Object.freeze(firstPass.map((it) => Object.freeze({
+  ...it,
+  from: Object.freeze(it.from.filter((c) => tierOf.has(c) && tierOf.get(c) < it.tier)),
+})));
 
 /**
  * Lookup by id: ITEM_BY_ID.get('extra_health') → the item object.
@@ -63,6 +78,19 @@ export const ITEMS = Object.freeze(
  * malicious share link could otherwise try to abuse.
  */
 export const ITEM_BY_ID = new Map(ITEMS.map((it) => [it.id, it]));
+
+/**
+ * The reverse of `from`: component id → list of items it upgrades into.
+ *   UPGRADES_INTO.get('headshot_booster') → [Headhunter]
+ * Used to show "Builds into: ..." on component cards.
+ */
+export const UPGRADES_INTO = new Map();
+for (const it of ITEMS) {
+  for (const c of it.from) {
+    if (!UPGRADES_INTO.has(c)) UPGRADES_INTO.set(c, []);
+    UPGRADES_INTO.get(c).push(it);
+  }
+}
 
 /** Where the data came from, shown in the page footer. */
 export const DATA_SOURCE = typeof GAME_DATA.source === 'string' ? GAME_DATA.source.slice(0, 80) : 'unknown';

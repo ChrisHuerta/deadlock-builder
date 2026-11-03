@@ -34,6 +34,13 @@
 //        • pinned items (picked from a Swap list) always win their slot.
 //     The runner-up items for each slot are kept as that item's "Swap" choices.
 //
+//     Upgrade paths: many items upgrade from a cheaper "component" (Headhunter
+//     from Headshot Booster). An upgrade gets +1 score when its component is
+//     already in the build. When both end up in the build, the component is
+//     bought early and later upgraded: its cost counts toward the upgrade and
+//     it stops taking a slot, so the freed slot is filled with another item.
+//     The build therefore always ends with 12 FINAL items.
+//
 //  4. COUNTERS (optional). For each enemy threat the user turned on, suggest
 //     up to 3 situational items from data/manual/counters.json. These sit
 //     OUTSIDE the 12 slots; each one names the core item to sell for it.
@@ -56,7 +63,7 @@
 //   a || b                       ≈  a or b
 //   x ** y                       ≈  x ** y   (same!)
 
-import { ITEMS, TIER_COST, CATEGORIES } from './data/items.js';
+import { ITEMS, ITEM_BY_ID, TIER_COST, CATEGORIES } from './data/items.js';
 import { HERO_BY_ID } from './data/heroes.js';
 import { PRIORITY_BY_ID, GAME_PLAN_BY_ID, TAG_LABELS } from './data/priorities.js';
 import { COUNTER_BY_ID } from './data/counters.js';
@@ -83,6 +90,7 @@ const PRIORITY_WEIGHT = 2;    // a selected priority is the strongest signal
 const HERO_WEIGHT = 0.75;     // hero kit nudges picks but doesn't dominate
 const FOCUS_WEIGHT = 1.5;     // multiplied by the slider fraction (0..1)
 const TAG_DECAY = 0.8;        // each repeat of a tag is worth 80% of the last
+const UPGRADE_BONUS = 1;      // upgrading something you already own is efficient
 
 // Labels shown above each group of items. The key is the item tier.
 export const PHASES = Object.freeze({
@@ -168,10 +176,14 @@ function buildTagWeights(state, fractions) {
  * spirit_power has weight 2.6 and already appears twice:
  *   1.4 + 2.6 × 0.8² = 1.4 + 1.664 = 3.064
  *
- * Also returns the top 3 contributing tags as human-readable "reasons",
- * which the UI shows under each item ("Fits: spirit power, cooldowns").
+ * Upgrade bonus: if the item upgrades from something already in the build
+ * (e.g. Headhunter when you own Headshot Booster), add UPGRADE_BONUS. That
+ * path is cheap: the component's cost counts toward it and frees a slot.
+ *
+ * Also returns the top 3 contributing reasons as readable text, which the
+ * UI shows under each item ("Fits: spirit power, upgrade path").
  */
-function scoreItem(item, tagWeights, tagCounts) {
+function scoreItem(item, tagWeights, tagCounts, chosen = new Set()) {
   let score = item.core;
   const reasons = [];
   for (const tag of item.tags) {
@@ -179,10 +191,14 @@ function scoreItem(item, tagWeights, tagCounts) {
     if (tw <= 0) continue;
     const v = tw * TAG_DECAY ** (tagCounts.get(tag) || 0);
     score += v;
-    reasons.push({ tag, v });
+    reasons.push({ label: TAG_LABELS.get(tag) || tag, v });
+  }
+  if (item.from.some((c) => chosen.has(c))) {
+    score += UPGRADE_BONUS;
+    reasons.push({ label: 'upgrade path', v: UPGRADE_BONUS });
   }
   reasons.sort((a, b) => b.v - a.v); // biggest contribution first
-  return { score, reasons: reasons.slice(0, 3).map((r) => TAG_LABELS.get(r.tag) || r.tag) };
+  return { score, reasons: reasons.slice(0, 3).map((r) => r.label) };
 }
 
 /**
@@ -255,7 +271,7 @@ function pickItem(slot, chosen, banned, pinned, tagWeights, tagCounts) {
   // Score every candidate, best first. Ties are broken alphabetically so the
   // result is always the same for the same input (deterministic).
   const ranked = pool
-    .map((item) => ({ item, ...scoreItem(item, tagWeights, tagCounts) })) // ≈ {"item": item, **s}
+    .map((item) => ({ item, ...scoreItem(item, tagWeights, tagCounts, chosen) })) // ≈ {"item": item, **s}
     .sort((a, b) => b.score - a.score || (a.item.name < b.item.name ? -1 : 1));
 
   // An item the user pinned (picked from the Swap list) always wins its slot.
@@ -301,7 +317,11 @@ function pickReplacement(picks, reserved) {
   return pool.reduce((a, b) => (b.item.tier < a.item.tier || (b.item.tier === a.item.tier && b.score < a.score) ? b : a)).item;
 }
 
-function buildCounters(state, fractions, picks, banned) {
+/**
+ * @param picks       every item in the build, including components
+ * @param finalPicks  only the items you end up holding (what can be sold)
+ */
+function buildCounters(state, fractions, picks, finalPicks, banned) {
   const inBuild = new Set(picks.map((p) => p.item.id));
   const used = new Set();       // counter items already suggested for another threat
   const reserved = new Set();   // core items already earmarked for replacement
@@ -324,7 +344,7 @@ function buildCounters(state, fractions, picks, banned) {
       const spare = ranked.slice(COUNTER_OPTIONS, COUNTER_OPTIONS + SWAP_CHOICES).map((c) => ({ item: c.item, why: c.why }));
       const options = shown.map((c) => ({
         item: c.item, why: c.why, pinned: pinned.has(c.item.id),
-        replace: pickReplacement(picks, reserved), alternatives: spare,
+        replace: pickReplacement(finalPicks, reserved), alternatives: spare,
       }));
 
       options.forEach((o) => used.add(o.item.id));
@@ -373,19 +393,53 @@ export function generateBuild(state) {
   // pick, record its tags so later items with the same tags score a bit less
   // (the 0.8^n diminishing returns from the header).
   const picks = [];
-  for (const slot of planSlots(quotas, plan.tiers)) {
+  const addPick = (slot) => {
     const pick = pickItem(slot, chosen, banned, pinned, tagWeights, tagCounts);
-    if (!pick) continue;
+    if (!pick) return;
     chosen.add(pick.item.id);
     pick.item.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) || 0) + 1));
     picks.push(pick);
+  };
+  for (const slot of planSlots(quotas, plan.tiers)) addPick(slot);
+
+  // Upgrade paths: when a component and its upgrade are both in the build
+  // (e.g. Headshot Booster + Headhunter), you buy the component early and
+  // later upgrade it. It's used up, so it no longer takes one of the 12
+  // slots. Refill each freed slot with another item of the component's
+  // category and tier. A refill can itself be a component of something in
+  // the build, so repeat until nothing changes (bounded, to be safe).
+  const refilled = new Set();
+  for (let guard = 0; guard < TOTAL_SLOTS; guard++) {
+    const fresh = [...findConsumed(picks).keys()].filter((c) => !refilled.has(c));
+    if (!fresh.length) break;
+    for (const c of fresh) {
+      refilled.add(c);
+      const comp = picks.find((p) => p.item.id === c).item;
+      addPick({ tier: comp.tier, cat: comp.cat });
+    }
   }
+  const consumed = findConsumed(picks);   // component id → the upgrade item it becomes
+
+  // Attach upgrade info to every pick, for the UI and the cost math:
+  //   buildsInto     – (components) the upgrade this item turns into
+  //   upgradesFrom   – (upgrades) the owned components that go into it
+  //   effectiveCost  – what you actually pay: an upgrade's price minus the
+  //                    components you already bought
+  for (const p of picks) {
+    p.buildsInto = consumed.get(p.item.id) || null;
+    p.upgradesFrom = p.item.from.filter((c) => consumed.get(c) === p.item).map((c) => ITEM_BY_ID.get(c));
+    p.effectiveCost = TIER_COST[p.item.tier] - p.upgradesFrom.reduce((s, c) => s + TIER_COST[c.tier], 0);
+  }
+  // "Final" items: what you end up holding (components are used up).
+  const finalPicks = picks.filter((p) => !p.buildsInto);
+
   // Swap choices must not include items that ended up elsewhere in the build.
   for (const p of picks) {
     p.alternatives = p.alternatives.filter((a) => !chosen.has(a.item.id)).slice(0, SWAP_CHOICES);
   }
 
-  // Group picks by tier for display; drop phases with no items.
+  // Group picks by tier for display; drop phases with no items. Components
+  // stay in their phase (you still buy them then), marked "Builds into".
   const phases = [1, 2, 3, 4]
     .map((tier) => ({
       tier,
@@ -394,19 +448,42 @@ export function generateBuild(state) {
     }))
     .filter((p) => p.items.length);
 
-  // Count what we actually picked (can differ from `quotas` if fallbacks kicked in).
+  // Count the final items per category (can differ from `quotas` if
+  // fallbacks kicked in).
   const actual = { weapon: 0, spirit: 0, vitality: 0 };
-  picks.forEach((p) => { actual[p.item.cat] += 1; });
+  finalPicks.forEach((p) => { actual[p.item.cat] += 1; });
 
   return {
     fractions,
     quotas: actual,
     phases,
-    // reduce ≈ sum(TIER_COST[p.item.tier] for p in picks)
-    totalCost: picks.reduce((sum, p) => sum + TIER_COST[p.item.tier], 0),
+    finalCount: finalPicks.length,
+    // What you actually spend: every item at its effective cost.
+    // reduce ≈ sum(p.effectiveCost for p in picks)
+    totalCost: picks.reduce((sum, p) => sum + p.effectiveCost, 0),
     tips: buildTips(fractions, state, actual),
     // Step 4: [{ id, label, hint, alreadyHave: [item],
     //           options: [{ item, why, replace, pinned, alternatives }] }]
-    counters: buildCounters(state, fractions, picks, banned),
+    // Counters see everything you buy (so they never suggest an item you
+    // already own), but only suggest selling final items, not components.
+    counters: buildCounters(state, fractions, picks, finalPicks, banned),
   };
+}
+
+/**
+ * Which picked components get used up by a picked upgrade?
+ * Returns Map(component id → upgrade item). Upgrades are checked cheapest
+ * first, and each component is used once: if Extra Health could become
+ * either Fortitude or Colossus, it goes into whichever comes first and the
+ * other upgrade is bought at full price.
+ */
+function findConsumed(picks) {
+  const ids = new Set(picks.map((p) => p.item.id));
+  const out = new Map();
+  for (const p of [...picks].sort((a, b) => a.item.tier - b.item.tier)) {
+    for (const c of p.item.from) {
+      if (ids.has(c) && !out.has(c)) out.set(c, p.item);
+    }
+  }
+  return out;
 }

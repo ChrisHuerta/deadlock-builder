@@ -74,7 +74,10 @@
     "name": "Kinetic Dash",
     "cat": "weapon",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "extra_stamina"
+    ]
   },
   {
     "id": "long_range",
@@ -102,7 +105,10 @@
     "name": "Opening Rounds",
     "cat": "weapon",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "high_velocity_rounds"
+    ]
   },
   {
     "id": "recharging_rush",
@@ -144,14 +150,20 @@
     "name": "Swift Striker",
     "cat": "weapon",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "rapid_rounds"
+    ]
   },
   {
     "id": "titanic_magazine",
     "name": "Titanic Magazine",
     "cat": "weapon",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "extended_magazine"
+    ]
   },
   {
     "id": "weakening_headshot",
@@ -172,7 +184,10 @@
     "name": "Ballistic Enchantment",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "mystic_expansion"
+    ]
   },
   {
     "id": "berserker",
@@ -193,35 +208,50 @@
     "name": "Burst Fire",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "rapid_rounds"
+    ]
   },
   {
     "id": "cultist_sacrifice",
     "name": "Cultist Sacrifice",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "monster_rounds"
+    ]
   },
   {
     "id": "escalating_resilience",
     "name": "Escalating Resilience",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "extended_magazine"
+    ]
   },
   {
     "id": "express_shot",
     "name": "Express Shot",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "high_velocity_rounds"
+    ]
   },
   {
     "id": "headhunter",
     "name": "Headhunter",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "headshot_booster"
+    ]
   },
   {
     "id": "heroic_aura",
@@ -249,28 +279,41 @@
     "name": "Point Blank",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "close_quarters"
+    ]
   },
   {
     "id": "shadow_weave",
     "name": "Shadow Weave",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "sprint_boots"
+    ]
   },
   {
     "id": "sharpshooter",
     "name": "Sharpshooter",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "long_range",
+      "high_velocity_rounds"
+    ]
   },
   {
     "id": "spirit_rend",
     "name": "Spirit Rend",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "spirit_shredder"
+    ]
   },
   {
     "id": "tesla_bullets",
@@ -291,35 +334,50 @@
     "name": "Weighted Shots",
     "cat": "weapon",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "slowing_bullets"
+    ]
   },
   {
     "id": "armor_piercer",
     "name": "Armor Piercer",
     "cat": "weapon",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "high_velocity_rounds"
+    ]
   },
   {
     "id": "capacitor",
     "name": "Capacitor",
     "cat": "weapon",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "tesla_bullets"
+    ]
   },
   {
     "id": "crippling_headshot",
     "name": "Crippling Headshot",
     "cat": "weapon",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "weakening_headshot"
+    ]
   },
   {
     "id": "crushing_fists",
     "name": "Crushing Fists",
     "cat": "weapon",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "melee_charge"
+    ]
   },
   {
     "id": "frenzy",
@@ -368,7 +426,10 @@
     "name": "Spiritual Overflow",
     "cat": "weapon",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "spirit_lifesteal"
+    ]
   },
   {
     "id": "extra_health",
@@ -459,14 +520,20 @@
     "name": "Enduring Speed",
     "cat": "vitality",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "sprint_boots"
+    ]
   },
   {
     "id": "guardian_ward",
     "name": "Guardian Ward",
     "cat": "vitality",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "grit"
+    ]
   },
   {
     "id": "healbane",
@@ -487,7 +554,10 @@
     "name": "Reactive Barrier",
     "cat": "vitality",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "grit"
+    ]
   },
   {
     "id": "restorative_locket",
@@ -515,21 +585,30 @@
     "name": "Spirit Shielding",
     "cat": "vitality",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "grit"
+    ]
   },
   {
     "id": "trophy_collector",
     "name": "Trophy Collector",
     "cat": "vitality",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "sprint_boots"
+    ]
   },
   {
     "id": "weapon_shielding",
     "name": "Weapon Shielding",
     "cat": "vitality",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "grit"
+    ]
   },
   {
     "id": "bullet_resilience",
@@ -557,28 +636,40 @@
     "name": "Fortitude",
     "cat": "vitality",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "extra_health"
+    ]
   },
   {
     "id": "fury_trance",
     "name": "Fury Trance",
     "cat": "vitality",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "bullet_lifesteal"
+    ]
   },
   {
     "id": "healing_nova",
     "name": "Healing Nova",
     "cat": "vitality",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "healing_rite"
+    ]
   },
   {
     "id": "lifestrike",
     "name": "Lifestrike",
     "cat": "vitality",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "melee_lifesteal"
+    ]
   },
   {
     "id": "majestic_leap",
@@ -599,7 +690,10 @@
     "name": "Rescue Beam",
     "cat": "vitality",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "healing_rite"
+    ]
   },
   {
     "id": "spirit_resilience",
@@ -613,7 +707,10 @@
     "name": "Stamina Mastery",
     "cat": "vitality",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "extra_stamina"
+    ]
   },
   {
     "id": "veil_walker",
@@ -641,14 +738,20 @@
     "name": "Colossus",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "extra_health"
+    ]
   },
   {
     "id": "divine_barrier",
     "name": "Divine Barrier",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "guardian_ward"
+    ]
   },
   {
     "id": "diviners_kevlar",
@@ -662,21 +765,30 @@
     "name": "Healing Tempo",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "healing_booster"
+    ]
   },
   {
     "id": "indomitable",
     "name": "Indomitable",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "reactive_barrier"
+    ]
   },
   {
     "id": "infuser",
     "name": "Infuser",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "spirit_lifesteal"
+    ]
   },
   {
     "id": "inhibitor",
@@ -690,14 +802,21 @@
     "name": "Juggernaut",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "enduring_speed"
+    ]
   },
   {
     "id": "leech",
     "name": "Leech",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "bullet_lifesteal",
+      "spirit_lifesteal"
+    ]
   },
   {
     "id": "phantom_strike",
@@ -725,21 +844,30 @@
     "name": "Spellbreaker",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "debuff_reducer"
+    ]
   },
   {
     "id": "unstoppable",
     "name": "Unstoppable",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "debuff_reducer"
+    ]
   },
   {
     "id": "vampiric_burst",
     "name": "Vampiric Burst",
     "cat": "vitality",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "bullet_lifesteal"
+    ]
   },
   {
     "id": "witchmail",
@@ -809,7 +937,10 @@
     "name": "Arcane Surge",
     "cat": "spirit",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "extra_stamina"
+    ]
   },
   {
     "id": "bullet_resist_shredder",
@@ -844,7 +975,10 @@
     "name": "Improved Spirit",
     "cat": "spirit",
     "tier": 2,
-    "cost": 1600
+    "cost": 1600,
+    "from": [
+      "extra_spirit"
+    ]
   },
   {
     "id": "mystic_slow",
@@ -900,14 +1034,20 @@
     "name": "Disarming Hex",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "rusted_barrel"
+    ]
   },
   {
     "id": "greater_expansion",
     "name": "Greater Expansion",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "mystic_expansion"
+    ]
   },
   {
     "id": "knockdown",
@@ -921,14 +1061,20 @@
     "name": "Radiant Regeneration",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "mystic_regeneration"
+    ]
   },
   {
     "id": "rapid_recharge",
     "name": "Rapid Recharge",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "extra_charge"
+    ]
   },
   {
     "id": "silence_wave",
@@ -942,35 +1088,50 @@
     "name": "Spirit Snatch",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "spirit_strike"
+    ]
   },
   {
     "id": "superior_cooldown",
     "name": "Superior Cooldown",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "compress_cooldown"
+    ]
   },
   {
     "id": "superior_duration",
     "name": "Superior Duration",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "duration_extender"
+    ]
   },
   {
     "id": "surge_of_power",
     "name": "Surge of Power",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "extra_spirit"
+    ]
   },
   {
     "id": "tankbuster",
     "name": "Tankbuster",
     "cat": "spirit",
     "tier": 3,
-    "cost": 3200
+    "cost": 3200,
+    "from": [
+      "mystic_burst"
+    ]
   },
   {
     "id": "torment_pulse",
@@ -984,14 +1145,20 @@
     "name": "Arctic Blast",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "cold_front"
+    ]
   },
   {
     "id": "boundless_spirit",
     "name": "Boundless Spirit",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "improved_spirit"
+    ]
   },
   {
     "id": "cursed_relic",
@@ -1012,7 +1179,10 @@
     "name": "Escalating Exposure",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "mystic_vulnerability"
+    ]
   },
   {
     "id": "ethereal_shift",
@@ -1026,14 +1196,20 @@
     "name": "Focus Lens",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "spirit_sap"
+    ]
   },
   {
     "id": "lightning_scroll",
     "name": "Lightning Scroll",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "mystic_slow"
+    ]
   },
   {
     "id": "magic_carpet",
@@ -1047,7 +1223,10 @@
     "name": "Mercurial Magnum",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "quicksilver_reload"
+    ]
   },
   {
     "id": "mystic_reverb",
@@ -1082,13 +1261,19 @@
     "name": "Transcendent Cooldown",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "superior_cooldown"
+    ]
   },
   {
     "id": "vortex_web",
     "name": "Vortex Web",
     "cat": "spirit",
     "tier": 4,
-    "cost": 6400
+    "cost": 6400,
+    "from": [
+      "slowing_hex"
+    ]
   }
 ]

@@ -14,6 +14,10 @@ third-party scripts, so it can be hosted for free on **GitHub Pages**.
 - 17 toggleable playstyle priorities
 - Game plan: balanced, early aggression or late-game scaling
 - 12-slot build grouped by phase (lane → late) with soul costs and a reason for each pick
+- **Upgrade paths**: upgrade items are labeled with what they upgrade from.
+  When a build includes both a component and its upgrade, the component is
+  marked "Builds into", doesn't use a final slot, and the upgrade shows the
+  reduced price you actually pay
 - **Counter the enemy**: toggle heavy gun, heavy spirit, tanky or flying
   enemies to get situational counter items in their own group, each with
   the core item to sell for it
@@ -91,6 +95,9 @@ it does and why.
 3. Each candidate item is scored from its tags. Tags get weight from the
    sliders (implicit), the selected priorities (strong) and the hero (mild).
    Tags that repeat are worth less each time, which keeps the build varied.
+   Upgrades of items already in the build get a bonus. When a component and
+   its upgrade are both picked, the component turns into the upgrade, and its
+   slot is refilled, so you always end with 12 final items.
 4. Counter items (optional) come from the hand-picked lists in
    `data/manual/counters.json`, shown in their priority order, with a nudge
    toward your main focus. Each one suggests selling your cheapest,
@@ -129,8 +136,9 @@ python tools/update_data.py fetch --heroes-file heroes.json --items-file items.j
 
 API docs: https://api.deadlock-api.com/docs
 
-How the merge works: the API decides **which** heroes and items exist and
-each item's category and tier. Your manual files supply everything that's a
+How the merge works: the API decides **which** heroes and items exist,
+each item's category and tier, and its upgrade path (from the API's
+`component_items`). Your manual files supply everything that's a
 judgment call (tags, descriptions, hero slider presets). New heroes or items
 without manual entries still show up, with neutral defaults. The script lists
 them so you can fill them in.
