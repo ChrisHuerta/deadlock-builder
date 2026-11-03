@@ -1,19 +1,41 @@
 <!doctype html>
+<!--
+  Deadlock Build Maker: the page skeleton.
+
+  This file only lays out the structure. Everything inside the empty
+  containers (hero dropdown, chips, item cards, tips, saved builds) is created
+  by js/main.js, which finds them by their id="..." attributes. If you rename
+  an id here, rename it in main.js too.
+
+  Styling lives in css/styles.css. There is no inline JavaScript or CSS on
+  purpose: the security policy below forbids it, which blocks a whole class
+  of attacks (injected scripts can't run even if they got onto the page).
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Makes the layout scale properly on phones. -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!--
-    Content Security Policy: only this site's own scripts/styles may load.
-    No inline scripts, no eval, no third-party requests, no form posting.
+    Content Security Policy (CSP): the browser enforces these rules.
+      default-src 'none'   block everything not explicitly allowed below
+      script-src 'self'    only scripts from this site's own files (no inline, no eval)
+      style-src 'self'     only our own stylesheet
+      img-src 'self' data: our own images (the favicon)
+      connect-src 'none'   the page can't make any network requests at all
+      base-uri / form-action / object-src 'none'  close other known loopholes
   -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; manifest-src 'self'">
+  <!-- Don't tell other sites which page a visitor came from. -->
   <meta name="referrer" content="no-referrer">
+  <!-- Text search engines and link previews show. -->
   <meta name="description" content="Pick how much you want to focus on Weapon, Spirit and Vitality and get an optimized Deadlock item build with a purchase order.">
   <title>Deadlock Build Maker</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
+  <!-- type="module" lets the JS files import each other, and makes the script
+       run only after the HTML below has loaded. -->
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -25,17 +47,23 @@
   </header>
 
   <main class="wrap layout">
-    <!-- ─────────────── Controls ─────────────── -->
+    <!-- ─────────────── Controls (left column) ───────────────
+         A <form> groups the inputs, but nothing is ever submitted: main.js
+         reacts to each change instantly instead. -->
     <form id="controls" class="panel controls" autocomplete="off" novalidate>
       <section>
         <h2>1. Hero <small>(optional)</small></h2>
+        <!-- "sr-only" = visible to screen readers only (the heading already shows it). -->
         <label class="sr-only" for="hero">Hero</label>
+        <!-- Options are added by main.js from the hero data. -->
         <select id="hero" name="hero"></select>
         <p class="help">Picking a hero sets a suggested focus and favors items that suit the hero's kit.</p>
       </section>
 
       <section>
         <h2>2. Focus</h2>
+        <!-- Three sliders. Only their relative sizes matter: the engine turns
+             them into percentages, and <output> shows each one's share. -->
         <div class="slider weapon">
           <label for="focus-weapon">Weapon</label>
           <input id="focus-weapon" type="range" min="0" max="100" step="5" data-cat="weapon">
@@ -51,6 +79,7 @@
           <input id="focus-vitality" type="range" min="0" max="100" step="5" data-cat="vitality">
           <output for="focus-vitality" id="out-vitality">0%</output>
         </div>
+        <!-- Quick presets. data-preset matches a key in PRESETS in main.js. -->
         <div class="preset-row" id="presets">
           <button type="button" data-preset="weapon">Gun carry</button>
           <button type="button" data-preset="spirit">Spirit caster</button>
@@ -61,16 +90,19 @@
 
       <section>
         <h2>3. Playstyle priorities</h2>
+        <!-- One toggle chip per priority, created by main.js. -->
         <div id="priorities" class="chips" role="group" aria-label="Playstyle priorities"></div>
       </section>
 
       <section>
         <h2>4. Game plan</h2>
+        <!-- Radio buttons (pick one), created by main.js. -->
         <div id="plans" class="segmented" role="radiogroup" aria-label="Game plan"></div>
       </section>
 
       <section>
         <h2>5. Counter the enemy <small>(optional)</small></h2>
+        <!-- One chip per enemy threat (from data/manual/counters.json). -->
         <div id="counters" class="chips counter-chips" role="group" aria-label="Enemy threats to counter"></div>
         <p class="help">Counter items are shown separately from your core build, each with a suggested item to sell.</p>
       </section>
@@ -80,7 +112,9 @@
       </section>
     </form>
 
-    <!-- ─────────────── Results ─────────────── -->
+    <!-- ─────────────── Results (right column) ───────────────
+         aria-live="polite" makes screen readers announce updates when the
+         build changes. -->
     <section class="results" aria-live="polite">
       <div class="panel">
         <div class="result-head">
@@ -93,9 +127,13 @@
             <span id="copy-status" class="status" role="status"></span>
           </div>
         </div>
+        <!-- Colored bar: how many of the 12 slots each category got. -->
         <div class="dist" id="distribution" aria-label="Item slots by category"></div>
+        <!-- Purchase order: one group per phase (lane, early, mid, late). -->
         <div id="phases"></div>
+        <!-- Counter items, only shown when a threat is selected. -->
         <div id="counter-results"></div>
+        <!-- Items you swapped out. Hidden while the list is empty. -->
         <div id="banned-wrap" class="banned" hidden>
           <span>Excluded:</span>
           <div id="banned" class="chips small"></div>
@@ -109,6 +147,7 @@
       </div>
 
       <div class="panel">
+        <!-- Saved in the browser's localStorage; never uploaded anywhere. -->
         <h2>Saved builds <small>(this device only)</small></h2>
         <div class="save-row">
           <label class="sr-only" for="save-name">Build name</label>
@@ -124,6 +163,7 @@
     <div class="wrap">
       <p>Fan-made project. Not affiliated with or endorsed by Valve. Deadlock is a trademark of Valve Corporation.
         Item data is community-maintained and may lag behind the latest patch.</p>
+      <!-- Filled in by main.js, e.g. "deadlock-api.com snapshot 2026-11-02". -->
       <p>Data source: <span id="data-source"></span></p>
     </div>
   </footer>

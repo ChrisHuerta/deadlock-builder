@@ -18,15 +18,22 @@ import update_data as ud  # noqa: E402
 
 
 def hero(name, **flags):
+    """Build a fake API hero entry. Flags default to 'playable'; override
+    them with keyword arguments, e.g. hero('X', disabled=True).
+    """
     return {"name": name, "player_selectable": True, "disabled": False, "in_development": False, **flags}
 
 
 def item(name, slot="weapon", tier=1, **extra):
+    """Build a fake API shop item entry; override fields with keyword args."""
     return {"name": name, "type": "upgrade", "item_slot_type": slot, "item_tier": tier,
             "shopable": True, "disabled": False, "cost": 800, **extra}
 
 
 class TestSlugify(unittest.TestCase):
+    """Ids are made from names; they must match the ids already used in
+    data/manual and in people's share links.
+    """
     def test_matches_existing_ids(self):
         self.assertEqual(ud.slugify("Hunter's Aura"), "hunters_aura")
         self.assertEqual(ud.slugify("Mo & Krill"), "mo_krill")
@@ -35,6 +42,9 @@ class TestSlugify(unittest.TestCase):
 
 
 class TestCleanName(unittest.TestCase):
+    """Names from the API must pass a strict allow-list; anything that could
+    carry markup or hide text is rejected.
+    """
     def test_accepts_normal_names(self):
         self.assertEqual(ud.clean_name("  Lady   Geist "), "Lady Geist")
         self.assertEqual(ud.clean_name("Hunter’s Aura"), "Hunter's Aura")
@@ -46,6 +56,7 @@ class TestCleanName(unittest.TestCase):
 
 
 class TestParseHeroes(unittest.TestCase):
+    """Turning the raw API hero list into our small, clean hero list."""
     def test_keeps_only_playable(self):
         heroes, _ = ud.parse_api_heroes([
             hero("Haze"),
@@ -91,6 +102,7 @@ class TestParseHeroes(unittest.TestCase):
 
 
 class TestParseItems(unittest.TestCase):
+    """Turning the raw API item list into our small, clean shop-item list."""
     def test_categories_tiers_and_filters(self):
         items, warnings = ud.parse_api_items([
             item("Basic Magazine"),
@@ -148,6 +160,7 @@ class TestDownloadGuards(unittest.TestCase):
 
 
 class TestOutputSafety(unittest.TestCase):
+    """The files we generate for the browser must only ever contain data."""
     def test_js_output_is_a_single_json_string(self):
         data = {"version": 1, "source": "x", "tags": {"a": "</script><script>alert(1)</script>"},
                 "items": [], "heroes": []}
@@ -164,6 +177,7 @@ class TestOutputSafety(unittest.TestCase):
 
 
 class TestMerge(unittest.TestCase):
+    """Combining API facts with hand-written data, and reporting what changed."""
     def test_reports_new_removed_and_changed(self):
         tags = {"dps": "damage"}
         manual_items = {
@@ -188,6 +202,7 @@ class TestMerge(unittest.TestCase):
 
 
 class TestSnapshot(unittest.TestCase):
+    """Re-reading the cleaned snapshot that `fetch` saved."""
     def test_snapshot_round_trip(self):
         """What `fetch` writes must be readable by `build` (regression test)."""
         heroes, _ = ud.parse_api_heroes([hero("Haze")])
@@ -205,7 +220,11 @@ class TestSnapshot(unittest.TestCase):
 
 
 class TestCounters(unittest.TestCase):
+    """Validation of data/manual/counters.json."""
     def _load(self, data):
+        """Run load_counters() against `data` written to a temporary folder,
+        so the real data/manual files are never touched by tests.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "counters.json").write_text(json.dumps(data), encoding="utf-8")
             old, ud.MANUAL_DIR = ud.MANUAL_DIR, Path(tmp)
@@ -238,6 +257,7 @@ class TestCounters(unittest.TestCase):
 
 
 class TestRealProjectData(unittest.TestCase):
+    """Checks against the project's actual data files."""
     def test_manual_data_is_valid(self):
         tags, items, heroes = ud.load_manual()
         self.assertGreater(len(items), 50)

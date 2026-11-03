@@ -65,13 +65,21 @@ js/storage.js            Saved builds (localStorage, validated on read)
 js/data/items.js         Loads + re-validates items from game-data.js
 js/data/heroes.js        Loads + re-validates heroes from game-data.js
 js/data/priorities.js    Playstyle priorities, tag labels, game plans
+js/data/counters.js      Loads + re-validates the counter-item lists
 js/data/game-data.js     GENERATED: data the site uses (don't edit)
-data/manual/             ← YOU EDIT THESE: item tags/descriptions, hero lean/tags, tag list
+data/manual/             ← YOU EDIT THESE: items, heroes, tags, counters (*.json)
 data/api-snapshot/       GENERATED: cleaned facts from the community API
 data/game-data.json      GENERATED: readable copy of game-data.js, for reviewing diffs
 tools/update_data.py     Data updater (Python, standard library only)
-tests/                   Python + Node tests
+tests/engine.test.js     Build engine, swaps, counters, share links (npm test)
+tests/test_update_data.py  Data updater, incl. malicious API responses
+tests/test_source_hygiene.py  Fails if any file hides invisible/bidi characters
 ```
+
+**Where to start reading the code:** `js/engine.js` explains the whole
+recommendation method in its header comment. `js/main.js` shows how the page
+turns clicks into builds. Every file starts with a comment block saying what
+it does and why.
 
 ## How the recommendation works
 

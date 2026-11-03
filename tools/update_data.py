@@ -138,10 +138,16 @@ def clean_name(value) -> str | None:
 
 
 def valid_id(value) -> bool:
+    """True if `value` is a safe id: lowercase letters, digits and
+    underscores only, and not a reserved JavaScript name like __proto__.
+    """
     return isinstance(value, str) and bool(ID_RE.match(value)) and value not in RESERVED_IDS
 
 
 def read_json(path: Path):
+    """Load one of our own JSON files, turning any problem into a clear
+    DataError that names the file (instead of a long Python traceback).
+    """
     try:
         with path.open("r", encoding="utf-8") as f:
             return json.load(f, parse_constant=_reject_constant)
@@ -153,6 +159,9 @@ def read_json(path: Path):
 
 def _reject_constant(name):
     # json accepts NaN/Infinity by default; real JSON doesn't. Reject them.
+    """Called by json for NaN/Infinity. Python's json accepts them, but they
+    aren't valid JSON and would break the browser side, so we refuse them.
+    """
     raise ValueError(f"invalid JSON constant {name}")
 
 
@@ -174,6 +183,9 @@ def write_atomic(path: Path, text: str) -> None:
 
 
 def dump(obj) -> str:
+    """Format data as pretty-printed JSON with a trailing newline, so files
+    are easy to read and produce small, clean `git diff`s.
+    """
     return json.dumps(obj, indent=2, ensure_ascii=False, sort_keys=False) + "\n"
 
 
@@ -183,6 +195,9 @@ class _SameHostRedirects(urllib.request.HTTPRedirectHandler):
     """Only follow redirects that stay on HTTPS and on an allowed host."""
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
+        """Called by urllib for every redirect. Refuse unless the new URL is
+        HTTPS on an allowed host; otherwise behave normally.
+        """
         target = urllib.parse.urlsplit(newurl)
         if target.scheme != "https" or target.hostname not in ALLOWED_HOSTS:
             raise urllib.error.HTTPError(newurl, code, "Blocked redirect to an untrusted location", headers, fp)
@@ -235,6 +250,10 @@ def load_local_api_file(path_str: str):
 
 
 def _parse_untrusted_json(body: bytes, source: str):
+    """Decode bytes from the network or a downloaded file as JSON. Any
+    decoding problem (bad UTF-8, bad JSON, absurdly deep nesting) becomes a
+    DataError. Nothing here can execute code: json.loads only builds data.
+    """
     try:
         return json.loads(body.decode("utf-8"), parse_constant=_reject_constant)
     except (UnicodeDecodeError, ValueError, RecursionError) as e:
@@ -247,6 +266,10 @@ def _parse_untrusted_json(body: bytes, source: str):
 
 def _as_list(payload, what: str) -> list:
     # Some APIs wrap lists as {"data": [...]} or return a dict keyed by id.
+    """Return the payload as a list of entries. APIs sometimes wrap lists
+    ({"data": [...]}) or key them by id ({"1": {...}}); accept those shapes
+    but fail clearly on anything else.
+    """
     if isinstance(payload, dict):
         for key in ("data", what, "items", "heroes"):
             if isinstance(payload.get(key), list):
@@ -260,6 +283,10 @@ def _as_list(payload, what: str) -> list:
 
 
 def _flag(entry: dict, key: str, default: bool) -> bool:
+    """Read a true/false flag from an API entry. The API uses null for
+    "not set", and a tampered response could put anything here, so any
+    non-boolean value falls back to `default`.
+    """
     v = entry.get(key, default)
     return v if isinstance(v, bool) else default
 
@@ -311,6 +338,10 @@ def parse_api_heroes(payload) -> tuple[list[dict], list[str]]:
 
 
 def _parse_tier(value) -> int | None:
+    """Turn an API tier value into 1-4, or None. Accepts an int (3) or a
+    string ending in the tier number ("EModTier_3"). Booleans are rejected
+    explicitly because in Python True == 1.
+    """
     if isinstance(value, bool):
         return None
     if isinstance(value, int):
@@ -373,6 +404,11 @@ def parse_api_items(payload) -> tuple[list[dict], list[str]]:
 # ───────────────────────────── manual data ─────────────────────────────
 
 def load_manual():
+    """Load and validate the three hand-edited files in data/manual/
+    (tags.json, items.json, heroes.json). Collects EVERY problem first and
+    reports them together, so you can fix them all in one go.
+    Returns (tags, items, heroes).
+    """
     tags = read_json(MANUAL_DIR / "tags.json")
     items = read_json(MANUAL_DIR / "items.json")
     heroes = read_json(MANUAL_DIR / "heroes.json")
@@ -433,6 +469,9 @@ def load_manual():
 
 
 def _check_tags(where, value, tags) -> list[str]:
+    """Check that `value` is a short list of tags that exist in tags.json.
+    Returns a list of error messages (empty if fine).
+    """
     if not isinstance(value, list) or len(value) > MAX_TAGS:
         return [f"{where}: tags must be a list of up to {MAX_TAGS} tags"]
     bad = [t for t in value if t not in tags]
@@ -454,6 +493,9 @@ def load_snapshot():
 
 
 def _snapshot_hero(e) -> dict | None:
+    """Validate one hero from data/api-snapshot/heroes.json (our own cleaned
+    format). Returns the clean hero, or None if anything is wrong.
+    """
     if not isinstance(e, dict) or not valid_id(e.get("id")):
         return None
     name = clean_name(e.get("name"))
@@ -461,6 +503,9 @@ def _snapshot_hero(e) -> dict | None:
 
 
 def _snapshot_item(e) -> dict | None:
+    """Validate one item from data/api-snapshot/items.json (our own cleaned
+    format). Returns the clean item, or None if anything is wrong.
+    """
     if not isinstance(e, dict) or not valid_id(e.get("id")):
         return None
     name = clean_name(e.get("name"))
@@ -621,6 +666,10 @@ def render_js(game_data) -> str:
 
 
 def print_report(report, warnings=()):
+    """Print the merge report: new heroes/items needing data, removed or
+    renamed entries, tier changes and broken counter references, followed
+    by any warnings from parsing the API.
+    """
     labels = {
         "heroes_missing_manual": "New heroes with no lean/tags yet (they get a neutral default)",
         "items_missing_manual": "New items with no tags yet (they will rarely be recommended)",
@@ -673,6 +722,9 @@ def add_stubs(report, snapshot) -> int:
 # ───────────────────────────── commands ─────────────────────────────
 
 def cmd_build(_args) -> int:
+    """`build` command: merge data/manual with the saved API snapshot (if
+    any) and write the site files. Never touches the network.
+    """
     tags, items, heroes = load_manual()
     game_data, report = merge(tags, items, heroes, load_snapshot(), load_counters())
     written = write_outputs(game_data)
@@ -683,6 +735,10 @@ def cmd_build(_args) -> int:
 
 
 def cmd_check(_args) -> int:
+    """`check` command: validate everything and confirm the generated files
+    match what `build` would produce. Writes nothing. Exits 1 if the site
+    files are out of date, which makes it usable in automated checks later.
+    """
     tags, items, heroes = load_manual()
     game_data, report = merge(tags, items, heroes, load_snapshot(), load_counters())
     print(f"Manual data OK: {len(items)} items, {len(heroes)} heroes, {len(tags)} tags.")
@@ -697,6 +753,10 @@ def cmd_check(_args) -> int:
 
 
 def cmd_fetch(args) -> int:
+    """`fetch` command: download heroes and items (or read saved files),
+    clean them, show what changed, then save the snapshot and rebuild.
+    With --dry-run it stops after showing the changes.
+    """
     print("Downloading heroes..." if not args.heroes_file else f"Reading {args.heroes_file}...")
     raw_heroes = load_local_api_file(args.heroes_file) if args.heroes_file else fetch_json(HEROES_URL)
     print("Downloading items..." if not args.items_file else f"Reading {args.items_file}...")
@@ -735,6 +795,10 @@ def cmd_fetch(args) -> int:
 
 
 def main(argv=None) -> int:
+    """Parse the command line and run the chosen command. DataError (our
+    own 'something is wrong with the data' error) becomes a short message
+    and exit code 2 instead of a traceback.
+    """
     parser = argparse.ArgumentParser(description="Refresh Deadlock Build Maker data.")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("build", help="merge local data into the site files (no internet)")

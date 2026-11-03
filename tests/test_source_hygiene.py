@@ -17,6 +17,7 @@ BAD = {chr(c) for lo, hi in RANGES for c in range(lo, hi + 1)}
 
 
 class TestSourceHygiene(unittest.TestCase):
+    """Scans every source file in the project."""
     def test_no_invisible_or_bidi_characters(self):
         problems = []
         for f in ROOT.rglob("*"):

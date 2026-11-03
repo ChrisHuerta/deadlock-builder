@@ -29,6 +29,20 @@
 //        • priorities     : +2   for every selected priority that lists the tag
 //        • hero           : +0.75 if the hero's preset lists the tag
 //
+//     Two user choices override the scores:
+//        • banned items (swapped out) are never considered,
+//        • pinned items (picked from a Swap list) always win their slot.
+//     The runner-up items for each slot are kept as that item's "Swap" choices.
+//
+//  4. COUNTERS (optional). For each enemy threat the user turned on, suggest
+//     up to 3 situational items from data/manual/counters.json. These sit
+//     OUTSIDE the 12 slots; each one names the core item to sell for it.
+//
+// Worked example: Haze with Weapon 60%, "Sustained DPS" selected. The tag
+// fire_rate weighs 1.5×0.6 (slider) + 2 (priority) + 0.75 (hero) = 3.65,
+// so Rapid Rounds (core 1.2, tags fire_rate + dps) scores about 7.5 and
+// beats most other tier-1 weapon items.
+//
 // JS ⇄ Python cheat-sheet for this file:
 //   import { X } from './y.js'   ≈  from y import X
 //   export function f(a) {...}   ≈  def f(a): ...   (and make it importable)
@@ -347,14 +361,17 @@ export function generateBuild(state) {
   const quotas = allocateSlots(fractions);
   // Step 2 inputs: tier counts from the chosen game plan.
   const plan = GAME_PLAN_BY_ID.get(state.plan) || GAME_PLAN_BY_ID.get('balanced');
-  // Step 3 inputs: scoring weights.
+  // Step 3 inputs: scoring weights, plus the user's swaps.
+  // Sets make "is this id in the list?" checks fast and simple (`.has(id)`).
   const tagWeights = buildTagWeights(state, fractions);
-  const banned = new Set(state.banned);
-  const pinned = new Set(state.pinned);
+  const banned = new Set(state.banned);   // swapped out: never pick these
+  const pinned = new Set(state.pinned);   // chosen from a Swap list: always pick these
   const chosen = new Set();      // ids already in the build
   const tagCounts = new Map();   // tag → how many chosen items have it
 
-  // Fill each planned slot with the best-scoring (or pinned) item.
+  // Fill each planned slot with the best-scoring (or pinned) item. After each
+  // pick, record its tags so later items with the same tags score a bit less
+  // (the 0.8^n diminishing returns from the header).
   const picks = [];
   for (const slot of planSlots(quotas, plan.tiers)) {
     const pick = pickItem(slot, chosen, banned, pinned, tagWeights, tagCounts);
@@ -388,7 +405,8 @@ export function generateBuild(state) {
     // reduce ≈ sum(TIER_COST[p.item.tier] for p in picks)
     totalCost: picks.reduce((sum, p) => sum + TIER_COST[p.item.tier], 0),
     tips: buildTips(fractions, state, actual),
-    // [{ id, label, hint, alreadyHave: [item], options: [{ item, why, replace }] }]
+    // Step 4: [{ id, label, hint, alreadyHave: [item],
+    //           options: [{ item, why, replace, pinned, alternatives }] }]
     counters: buildCounters(state, fractions, picks, banned),
   };
 }

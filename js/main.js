@@ -3,7 +3,8 @@
 // ═══════════════════════════════════════════════════════════════════════════
 //
 // index.html loads this file with <script type="module">. It:
-//   1. fills in the controls (hero dropdown, priority chips, game-plan buttons),
+//   1. fills in the controls (hero dropdown, priority chips, game-plan buttons,
+//      counter chips),
 //   2. listens for clicks/drags ("events") and updates the `state` object,
 //   3. after every change calls render(), which asks the engine for a build
 //      and redraws the results.
@@ -11,6 +12,20 @@
 // The flow is always one direction (like a simple game loop):
 //
 //     user input ──► update(patch) ──► state ──► render() ──► page
+//
+// Because render() rebuilds the results from scratch every time, there's no
+// risk of the page showing something different from `state`. The engine is
+// fast (a few milliseconds), so redrawing on every slider tick is fine.
+//
+// What's in this file, top to bottom:
+//   • helpers ............ $(), el(), fmt()
+//   • initControls() ..... builds the left-hand controls and wires up events
+//   • syncControls() ..... makes the controls match `state`
+//   • update() ........... the one place that changes `state`
+//   • results ............ distribution bar, item cards, counter cards
+//   • swap lists ......... the "Swap" pop-down with alternative items
+//   • share & save ....... copy-link button and saved builds
+//   • render() + startup
 //
 // Terms you'll see:
 //   • DOM — the page as a tree of objects JS can read/change. document.getElementById('x')
@@ -31,8 +46,11 @@ import { generateBuild, TOTAL_SLOTS } from './engine.js';
 import { defaultState, sanitizeState, encodeState, decodeState } from './state.js';
 import { loadSaved, saveBuild, deleteBuild, cleanName } from './storage.js';
 
+// ───────────────────────── Helpers ─────────────────────────
+
 // Shortcut: $('hero') instead of document.getElementById('hero').
 const $ = (id) => document.getElementById(id);
+// ['weapon', 'vitality', 'spirit'], used to loop over the three sliders.
 const CATS = Object.keys(CATEGORIES);
 
 // Slider values applied by the quick preset buttons under the sliders.
@@ -125,7 +143,8 @@ function initControls() {
     planWrap.append(el('label', { for: `plan-${g.id}` }, input, el('span', {}, g.label)));
   }
 
-  // Counter chips: same pattern as priorities, one checkbox per enemy threat.
+  // Counter chips: same pattern as priorities, one checkbox per enemy threat
+  // (heavy gun, heavy spirit, tanky, flying). The hint shows on hover.
   const counterWrap = $('counters');
   for (const t of COUNTERS) {
     const input = el('input', { type: 'checkbox', value: t.id, id: `counter-${t.id}` });
@@ -138,6 +157,8 @@ function initControls() {
   }
 
   // Remaining buttons.
+  // (openSwap is declared further down; that's fine because this click
+  //  handler only runs later, after the whole file has loaded.)
   $('reset').addEventListener('click', () => { state = defaultState(); openSwap = null; render(); });
   // "Clear" resets your swaps entirely: nothing excluded, nothing pinned.
   $('clear-banned').addEventListener('click', () => update({ banned: [], pinned: [], counterPins: [] }));
@@ -201,8 +222,19 @@ function renderDistribution(quotas) {
   }
 }
 
-// ───── Swap lists ─────
+// ───────────────────────── Swap lists ─────────────────────────
+//
+// Clicking "Swap" on a card opens a small list of alternatives under it.
+// Choosing one does two things to `state`:
+//   • the old item goes into `banned` (shown under "Excluded:"), and
+//   • the chosen item goes into `pinned` (or `counterPins` for counter cards),
+//     which tells the engine "always use this item for its slot".
+// Pinning is what makes the swap stick even if you then move a slider. The
+// alternatives themselves come from the engine (pick.alternatives): the
+// runner-up items it scored for that same slot.
+
 // Which card's Swap list is open, e.g. 'core:ricochet' or 'counter:knockdown'.
+// The prefix keeps a core card and a counter card for the same item apart.
 // This is temporary UI state, so it isn't part of `state` or the share link.
 let openSwap = null;
 
@@ -211,6 +243,7 @@ function toggleSwap(key) {
   openSwap = openSwap === key ? null : key;
   render();
   // Move keyboard focus into the list so keyboard users land on the choices.
+  // CSS.escape makes the key safe to put inside a CSS selector string.
   if (openSwap) document.querySelector(`[data-swap-key="${CSS.escape(key)}"] button`)?.focus();
 }
 
@@ -225,7 +258,15 @@ function swapItem(fromId, toId, pinKey) {
   update({ banned: [...state.banned, fromId], [pinKey]: toId ? [...pins, toId] : pins });
 }
 
-/** The list of alternatives shown under a card after clicking Swap. */
+/**
+ * The list of alternatives shown under a card after clicking Swap.
+ *   key          – which card this belongs to (see openSwap)
+ *   item         – the item being swapped out
+ *   alternatives – [{ item, ... }] from the engine
+ *   pinKey       – 'pinned' (core) or 'counterPins' (counters)
+ *   describe     – function giving the grey line under each choice; core
+ *                  cards show "Fits: ...", counter cards show the counter reason
+ */
 function swapPanel(key, item, alternatives, pinKey, describe) {
   const choices = alternatives.map((alt) => {
     const b = el('button', { type: 'button', class: `swap-choice ${alt.item.cat}` },
@@ -256,9 +297,17 @@ function swapButton(key, item) {
   return b;
 }
 
-/** One item card: badge, name, cost, description, "Fits: ..." reasons, Swap button. */
+// ───────────────────────── Item and counter cards ─────────────────────────
+
+/**
+ * One item card: badge, name, cost, description, "Fits: ..." reasons (or
+ * "Your pick" if you chose it from a Swap list), Swap button, and the Swap
+ * list itself when it's open.
+ */
 function itemCard(pick) {
-  const { item, reasons, alternatives } = pick; // ≈ item, reasons = pick["item"], pick["reasons"]
+  // "Destructuring": pull fields out of the object into variables.
+  // ≈ item, reasons, alternatives = pick["item"], pick["reasons"], pick["alternatives"]
+  const { item, reasons, alternatives } = pick;
   const key = `core:${item.id}`;
 
   return el('li', { class: `item ${item.cat}${openSwap === key ? ' swapping' : ''}` },
@@ -295,6 +344,8 @@ function counterCard(option) {
       el('span', { class: 'cost' }, fmt(TIER_COST[item.tier])),
     ),
     el('p', { class: 'desc' }, why || item.desc),
+    // "Replace: X (cost)". The `...( ? [...] : [...])` spreads a list of
+    // children into el(), since el() takes children as separate arguments.
     el('p', { class: 'replace' },
       ...(replace
         ? ['Replace: ', el('strong', {}, replace.name), ` (${fmt(TIER_COST[replace.tier])})`]
@@ -354,7 +405,8 @@ function renderBuild(build) {
   $('phases').replaceChildren(...phases);
   renderCounters(build.counters);
 
-  // "Excluded:" row — click an item to allow it again.
+  // "Excluded:" row: every item you swapped out. Click one to allow it again
+  // (the item you picked in its place stays pinned until you click "Clear").
   const bannedWrap = $('banned-wrap');
   bannedWrap.hidden = state.banned.length === 0;
   $('banned').replaceChildren(...state.banned.map((id) => {
@@ -431,7 +483,8 @@ function render() {
   if (location.hash.slice(1) !== hash) history.replaceState(null, '', `#${hash}`);
 }
 
-// Startup: build the controls, draw the first build, show saved builds.
+// Startup: show where the data came from (footer), build the controls, draw
+// the first build, show saved builds. This runs once when the page loads.
 $('data-source').textContent = DATA_SOURCE === 'manual' ? 'hand-maintained data' : DATA_SOURCE;
 initControls();
 render();

@@ -10,26 +10,29 @@
    The category colors (--weapon, --spirit, --vitality) are used for the
    sliders, badges, item borders and the distribution bar. */
 
+/* ───────────── Design tokens (colors, sizes) ───────────── */
 :root {
-  --bg: #0f0d0b;
-  --bg-2: #17140f;
-  --panel: #1d1914;
-  --panel-2: #26211a;
-  --line: #3a3228;
-  --text: #ece4d6;
-  --muted: #a99c87;
-  --accent: #d9b26a;
-  --weapon: #e39a3b;
+  --bg: #0f0d0b;        /* page background */
+  --bg-2: #17140f;      /* bottom of panel gradient */
+  --panel: #1d1914;     /* panel background */
+  --panel-2: #26211a;   /* cards, inputs, buttons */
+  --line: #3a3228;      /* borders */
+  --text: #ece4d6;      /* main text */
+  --muted: #a99c87;     /* secondary text */
+  --accent: #d9b26a;    /* gold highlight: selected chips, costs, "Your pick" */
+  --weapon: #e39a3b;    /* category colors, matching the in-game shop */
   --vitality: #6fbf4a;
   --spirit: #a77bf0;
-  --danger: #e0645a;
-  --counter: #e0645a;
+  --danger: #e0645a;    /* destructive buttons (Delete) */
+  --counter: #e0645a;   /* counter items section */
   --radius: 10px;
-  color-scheme: dark;
+  color-scheme: dark;   /* tells the browser to draw dark scrollbars/form controls */
 }
 
+/* Make width/height include padding and border. Much easier to reason about. */
 * { box-sizing: border-box; }
 
+/* Stop mobile Safari from enlarging text on its own when rotating. */
 html { -webkit-text-size-adjust: 100%; }
 
 body {
@@ -39,8 +42,10 @@ body {
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Centered content column: at most 1200px wide, with 16px gutters on small screens. */
 .wrap { width: min(1200px, 100% - 32px); margin-inline: auto; }
 
+/* Hide visually but keep readable by screen readers (used for some labels). */
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
@@ -58,7 +63,8 @@ h2 small, h3 .tier { color: var(--muted); font-weight: 400; font-size: .85em; }
 .tagline { color: var(--muted); margin: .3rem 0 0; }
 .site-footer { border-top: 1px solid var(--line); margin-top: 32px; padding: 18px 0 28px; color: var(--muted); font-size: .82rem; }
 
-/* Layout */
+/* ───────────── Layout ─────────────
+   Two columns (controls | results) on wide screens; one column below 860px. */
 .layout {
   display: grid;
   grid-template-columns: minmax(280px, 360px) 1fr;
@@ -74,12 +80,14 @@ h2 small, h3 .tier { color: var(--muted); font-weight: 400; font-size: .85em; }
   border-radius: var(--radius);
   padding: 18px;
 }
+/* min-width: 0 lets the grid column shrink instead of overflowing on phones. */
 .results { display: grid; gap: 20px; min-width: 0; }
 
+/* On wide screens the controls stay in view while you scroll the results. */
 .controls { display: grid; gap: 22px; }
 @media (min-width: 861px) { .controls { position: sticky; top: 16px; } }
 
-/* Form elements */
+/* ───────────── Form elements ───────────── */
 button, select, input[type="text"] {
   font: inherit;
   color: var(--text);
@@ -90,16 +98,21 @@ button, select, input[type="text"] {
 }
 button { cursor: pointer; transition: border-color .15s, background .15s; }
 button:hover { border-color: var(--accent); }
+/* Visible gold outline for keyboard users (focus-visible skips mouse clicks).
+   The chip rules use :focus-within because their real checkbox is hidden. */
 button:focus-visible, select:focus-visible, input:focus-visible, .chip:focus-within, .segmented label:focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 select, input[type="text"] { width: 100%; }
+/* Button variants: .ghost = transparent, .small = compact, .danger = red on hover. */
 button.ghost { background: transparent; }
 button.small { padding: 4px 10px; font-size: .85rem; }
 button.danger:hover { border-color: var(--danger); color: var(--danger); }
 
-/* Sliders */
+/* ───────────── Sliders ─────────────
+   Grid: [label 70px][slider fills the rest][percentage 48px].
+   accent-color tints the native slider in each category's color. */
 .slider { display: grid; grid-template-columns: 70px 1fr 48px; align-items: center; gap: 10px; margin: 8px 0; }
 .slider label { font-weight: 600; }
 .slider output { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
@@ -114,7 +127,12 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .preset-row button { font-size: .85rem; padding: 5px 10px; }
 
-/* Chips */
+/* ───────────── Chips (priorities, counters) ─────────────
+   Each chip is <label><input type="checkbox"><span>Text</span></label>.
+   The real checkbox is made invisible (but still works with keyboard and
+   screen readers) and the <span> is styled as a pill. "input:checked + span"
+   means "the span right after a checked checkbox", which is how a chip
+   lights up when selected, with no JavaScript needed for the look. */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip, .segmented label { position: relative; }
 .chip { cursor: pointer; user-select: none; }
@@ -127,9 +145,11 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .chip:hover span { border-color: var(--accent); }
 .chip input:checked + span { background: var(--accent); color: #1a140c; border-color: var(--accent); font-weight: 600; }
 
+/* Pill-shaped buttons in the "Excluded:" row. */
 .chip-btn { border-radius: 999px; padding: 3px 10px; font-size: .82rem; }
 
-/* Segmented */
+/* ───────────── Segmented control (game plan) ─────────────
+   Same hidden-input trick as chips, but with radio buttons joined into one bar. */
 .segmented { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .segmented label { flex: 1 1 auto; cursor: pointer; text-align: center; }
 .segmented input { position: absolute; opacity: 0; pointer-events: none; }
@@ -137,11 +157,12 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .segmented label:last-child span { border-right: 0; }
 .segmented input:checked + span { background: var(--accent); color: #1a140c; font-weight: 600; }
 
-/* Results */
+/* ───────────── Results ───────────── */
 .result-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 .share { display: flex; align-items: center; gap: 10px; }
 .status { color: var(--muted); font-size: .85rem; }
 
+/* Distribution bar. Each .seg's width is set from JS via flex-grow (item count). */
 .dist { display: flex; height: 30px; margin: 16px 0 6px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
 .seg {
   display: flex; align-items: center; justify-content: center; min-width: 0;
@@ -151,15 +172,20 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .seg.spirit { background: var(--spirit); }
 .seg.vitality { background: var(--vitality); }
 
+/* One purchase-order phase (Lane / Early / Mid / Late). */
 .phase { margin-top: 20px; }
 .phase header { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .phase h3 { font-size: 1rem; }
 .phase-cost { color: var(--muted); font-size: .82rem; font-variant-numeric: tabular-nums; }
 
+/* Card grid: as many 230px+ columns as fit, so it reflows on any screen size. */
 .items {
   list-style: none; padding: 0; margin: 10px 0 0;
   display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
+/* Item card. --c is a per-card variable holding its category color; the
+   .weapon/.spirit/.vitality classes below set it, and the left border and
+   badge both use it. So one class change recolors the whole card. */
 .item {
   --c: var(--accent);
   background: var(--panel-2);
@@ -181,22 +207,25 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .why { font-size: .78rem; color: var(--text); opacity: .8; }
 .swap { font-size: .75rem; padding: 2px 8px; background: transparent; }
 
-/* Counter items: red border and section rule, but the badge keeps the item's
-   real category color (set by .weapon/.spirit/.vitality on the badge). */
+/* ───────────── Counter items ─────────────
+   Red section divider and red left border, so counters stand apart from the
+   core build. Only the border is overridden; the badge still uses --c, so
+   it keeps the item's real category color. */
 .counters-phase { margin-top: 28px; padding-top: 16px; border-top: 2px solid var(--counter); }
 .counters-phase h3 { color: var(--counter); }
 .counter-group { margin-top: 14px; }
 .counter-group h4 { margin: 0; font-size: .95rem; }
 .item.counter { border-left-color: var(--counter); }
-.item.counter.weapon .badge { background: var(--weapon); }
-.item.counter.spirit .badge { background: var(--spirit); }
-.item.counter.vitality .badge { background: var(--vitality); }
+/* "Replace: X" line, and "Already in your build" note. */
 .replace { margin: 0; font-size: .82rem; color: var(--text); }
 .replace strong { color: var(--counter); }
 .have { margin: 6px 0 0; font-size: .85rem; color: var(--vitality); }
+/* Selected counter chips are red instead of gold. */
 .counter-chips .chip input:checked + span { background: var(--counter); border-color: var(--counter); color: #1a140c; }
 
-/* Swap list (opens under a card) */
+/* ───────────── Swap list (opens under a card) ─────────────
+   .swapping highlights the card whose list is open; .pinned marks "Your pick".
+   Each choice is a button laid out as [name | cost] with the reason below. */
 .item.swapping { border-color: var(--accent); }
 .swap.open { border-color: var(--accent); color: var(--accent); }
 .why.pinned { color: var(--accent); font-weight: 600; opacity: 1; }
@@ -214,14 +243,19 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .swap-why { grid-column: 1 / -1; font-size: .76rem; color: var(--muted); }
 .swap-panel .row { display: flex; gap: 6px; flex-wrap: wrap; }
 
+/* ───────────── Excluded items row ─────────────
+   The [hidden] rule is needed because "display: flex" above would otherwise
+   override the HTML hidden attribute and show an empty row. */
 .banned { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 18px; color: var(--muted); font-size: .88rem; }
 .banned[hidden] { display: none; }
 
+/* ───────────── Tips and saved builds ───────────── */
 .tips { margin: 0; padding-left: 1.2rem; color: var(--muted); }
 .tips li + li { margin-top: 6px; }
 
 .save-row { display: flex; gap: 8px; }
 .saved { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+/* overflow-wrap: anywhere stops a very long build name from breaking the layout. */
 .saved li {
   display: flex; justify-content: space-between; align-items: center; gap: 10px;
   padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2);
@@ -231,6 +265,7 @@ button.danger:hover { border-color: var(--danger); color: var(--danger); }
 .saved .meta { color: var(--muted); font-size: .82rem; }
 .saved .row { display: flex; gap: 6px; flex-shrink: 0; }
 
+/* Respect the operating-system setting for people who prefer less motion. */
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
 }
