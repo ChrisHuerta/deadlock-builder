@@ -33,8 +33,6 @@ COMMANDS (run from the project folder)
                                  heroes/items so you can fill in tags/lean.
         --heroes-file PATH       Use a JSON file you downloaded yourself (e.g.
         --items-file PATH        in your browser) instead of the network.
-        --include-in-development Also include heroes the API marks as
-                                 selectable but still in development.
 
 SECURITY MEASURES (the API is community-run, so treat it as untrusted)
     * Python standard library only: no pip packages, nothing extra to trust.
@@ -261,13 +259,22 @@ def _flag(entry: dict, key: str, default: bool) -> bool:
     return v if isinstance(v, bool) else default
 
 
-def parse_api_heroes(payload, include_in_development: bool = False) -> tuple[list[dict], list[str]]:
+def _is_released(entry: dict) -> bool:
+    """Prefer `development_state` ("release" = in the game). The older
+    `in_development` flag can be stale (Baba and Violet were still flagged
+    after release), so it's only used when development_state is missing."""
+    state = entry.get("development_state")
+    if isinstance(state, str):
+        return state.lower() == "release"
+    return not _flag(entry, "in_development", False)
+
+
+def parse_api_heroes(payload) -> tuple[list[dict], list[str]]:
     """Return (heroes, warnings). Keeps only playable heroes.
 
     The API lists every hero in the game files, including unreleased ones.
-    A hero counts as playable when player_selectable is true and disabled is
-    not true. Heroes that are selectable but flagged in_development (e.g.
-    hero-labs heroes) are left out unless include_in_development is set."""
+    A hero counts as playable when player_selectable is true, disabled is
+    not true, and it's released (see _is_released)."""
     raw = _as_list(payload, "heroes")
     if len(raw) > MAX_HEROES:
         raise DataError(f"API returned {len(raw)} heroes, more than the sanity limit {MAX_HEROES}")
@@ -283,8 +290,8 @@ def parse_api_heroes(payload, include_in_development: bool = False) -> tuple[lis
         if not name:
             warnings.append(f"Skipped hero with invalid name: {str(entry.get('name'))[:60]!r}")
             continue
-        if _flag(entry, "in_development", False) and not include_in_development:
-            warnings.append(f"Left out {name!r}: marked in development (use --include-in-development to add)")
+        if not _is_released(entry):
+            warnings.append(f"Left out {name!r}: selectable but not released yet")
             continue
         hid = slugify(name)
         if not valid_id(hid) or hid in seen:
@@ -624,7 +631,7 @@ def cmd_fetch(args) -> int:
     print("Downloading items..." if not args.items_file else f"Reading {args.items_file}...")
     raw_items = load_local_api_file(args.items_file) if args.items_file else fetch_json(ITEMS_URL)
 
-    heroes, hw = parse_api_heroes(raw_heroes, include_in_development=args.include_in_development)
+    heroes, hw = parse_api_heroes(raw_heroes)
     items, iw = parse_api_items(raw_items)
     meta = {"fetched": _dt.date.today().isoformat(),
             "source": "file" if (args.heroes_file or args.items_file) else "deadlock-api.com"}
@@ -666,8 +673,6 @@ def main(argv=None) -> int:
     f.add_argument("--add-stubs", action="store_true", help="add empty manual entries for new heroes/items")
     f.add_argument("--heroes-file", help="use a saved heroes JSON file instead of downloading")
     f.add_argument("--items-file", help="use a saved items JSON file instead of downloading")
-    f.add_argument("--include-in-development", action="store_true",
-                   help="also include selectable heroes the API marks as in development")
     args = parser.parse_args(argv)
 
     try:

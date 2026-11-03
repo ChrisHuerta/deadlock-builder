@@ -122,8 +122,8 @@ them so you can fill them in.
 IDs come from names (`Hunter's Aura` → `hunters_aura`) and are used in share
 links. If Valve renames an item, old links simply drop it.
 
-Filtering: heroes must be selectable and not disabled. Heroes still marked
-"in development" are left out unless you pass `--include-in-development`.
+Filtering: heroes must be selectable, not disabled, and have a
+`development_state` of `release`.
 Tier-5 items, which have a placeholder cost of 9999, are left out as well.
 
 **Script security:** HTTPS only, with certificate checks. Only

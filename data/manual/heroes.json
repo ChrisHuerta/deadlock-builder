@@ -346,145 +346,241 @@
   "apollo": {
     "name": "Apollo",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 50,
+      "spirit": 25,
+      "vitality": 25
     },
-    "tags": []
+    "tags": [
+      "mobility",
+      "close",
+      "burst",
+      "melee"
+    ]
   },
   "billy": {
     "name": "Billy",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 35,
+      "spirit": 25,
+      "vitality": 40
     },
-    "tags": []
+    "tags": [
+      "close",
+      "melee",
+      "hp",
+      "cc"
+    ]
   },
   "celeste": {
     "name": "Celeste",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 25,
+      "spirit": 50,
+      "vitality": 25
     },
-    "tags": []
+    "tags": [
+      "cc",
+      "burst",
+      "cooldown"
+    ]
   },
   "deadman_danny": {
     "name": "Deadman Danny",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 45,
+      "spirit": 35,
+      "vitality": 20
     },
-    "tags": []
+    "tags": [
+      "burst",
+      "mobility",
+      "range"
+    ]
   },
   "drifter": {
     "name": "Drifter",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 45,
+      "spirit": 25,
+      "vitality": 30
     },
-    "tags": []
+    "tags": [
+      "close",
+      "lifesteal",
+      "burst",
+      "mobility"
+    ]
   },
   "graves": {
     "name": "Graves",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 15,
+      "spirit": 55,
+      "vitality": 30
     },
-    "tags": []
+    "tags": [
+      "duration",
+      "cooldown",
+      "dps",
+      "ability_range"
+    ]
   },
   "mina": {
     "name": "Mina",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 30,
+      "spirit": 45,
+      "vitality": 25
     },
-    "tags": []
+    "tags": [
+      "mobility",
+      "dps",
+      "debuff"
+    ]
   },
   "nurse_harrow": {
     "name": "Nurse Harrow",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 20,
+      "spirit": 40,
+      "vitality": 40
     },
-    "tags": []
+    "tags": [
+      "team",
+      "regen",
+      "cc"
+    ]
   },
   "paige": {
     "name": "Paige",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 15,
+      "spirit": 45,
+      "vitality": 40
     },
-    "tags": []
+    "tags": [
+      "team",
+      "shield",
+      "cooldown"
+    ]
   },
   "rat_king": {
     "name": "Rat King",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 35,
+      "spirit": 25,
+      "vitality": 40
     },
-    "tags": []
+    "tags": [
+      "close",
+      "hp",
+      "lifesteal"
+    ]
   },
   "rem": {
     "name": "Rem",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 15,
+      "spirit": 45,
+      "vitality": 40
     },
-    "tags": []
+    "tags": [
+      "team",
+      "cc",
+      "escape"
+    ]
   },
   "silver": {
     "name": "Silver",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 45,
+      "spirit": 20,
+      "vitality": 35
     },
-    "tags": []
+    "tags": [
+      "range",
+      "melee",
+      "hp",
+      "dps"
+    ]
   },
   "solomon": {
     "name": "Solomon",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 20,
+      "spirit": 55,
+      "vitality": 25
     },
-    "tags": []
+    "tags": [
+      "cc",
+      "burst",
+      "ability_range"
+    ]
   },
   "the_doorman": {
     "name": "The Doorman",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 20,
+      "spirit": 50,
+      "vitality": 30
     },
-    "tags": []
+    "tags": [
+      "cc",
+      "mobility",
+      "cooldown"
+    ]
   },
   "venator": {
     "name": "Venator",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 55,
+      "spirit": 25,
+      "vitality": 20
     },
-    "tags": []
+    "tags": [
+      "headshot",
+      "range",
+      "burst"
+    ]
   },
   "victor": {
     "name": "Victor",
     "lean": {
-      "weapon": 34,
-      "spirit": 33,
-      "vitality": 33
+      "weapon": 30,
+      "spirit": 25,
+      "vitality": 45
     },
-    "tags": []
+    "tags": [
+      "hp",
+      "regen",
+      "lifesteal",
+      "close"
+    ]
+  },
+  "baba": {
+    "name": "Baba",
+    "lean": {
+      "weapon": 30,
+      "spirit": 50,
+      "vitality": 20
+    },
+    "tags": [
+      "debuff",
+      "cc",
+      "burst"
+    ]
+  },
+  "violet": {
+    "name": "Violet",
+    "lean": {
+      "weapon": 25,
+      "spirit": 50,
+      "vitality": 25
+    },
+    "tags": [
+      "mobility",
+      "burst",
+      "cooldown"
+    ]
   }
 }

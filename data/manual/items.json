@@ -1,15 +1,4 @@
 {
-  "basic_magazine": {
-    "name": "Basic Magazine",
-    "cat": "weapon",
-    "tier": 1,
-    "tags": [
-      "ammo",
-      "dps"
-    ],
-    "desc": "More ammo and a little extra weapon damage.",
-    "core": 1.3
-  },
   "close_quarters": {
     "name": "Close Quarters",
     "cat": "weapon",
@@ -92,7 +81,7 @@
   "berserker": {
     "name": "Berserker",
     "cat": "weapon",
-    "tier": 2,
+    "tier": 3,
     "tags": [
       "dps",
       "close"
@@ -187,18 +176,6 @@
       "dps"
     ],
     "desc": "Bullets slow the enemy you hit.",
-    "core": 1
-  },
-  "soul_shredder_bullets": {
-    "name": "Soul Shredder Bullets",
-    "cat": "weapon",
-    "tier": 2,
-    "tags": [
-      "debuff",
-      "lifesteal",
-      "spirit_power"
-    ],
-    "desc": "Bullets weaken enemy spirit resistance and grant spirit lifesteal.",
     "core": 1
   },
   "split_shot": {
@@ -315,17 +292,6 @@
     "desc": "Bonus damage and a slow against close targets.",
     "core": 1
   },
-  "pristine_emblem": {
-    "name": "Pristine Emblem",
-    "cat": "weapon",
-    "tier": 3,
-    "tags": [
-      "dps",
-      "burst"
-    ],
-    "desc": "Bonus damage against targets at high health.",
-    "core": 1
-  },
   "sharpshooter": {
     "name": "Sharpshooter",
     "cat": "weapon",
@@ -351,7 +317,7 @@
   "titanic_magazine": {
     "name": "Titanic Magazine",
     "cat": "weapon",
-    "tier": 3,
+    "tier": 2,
     "tags": [
       "ammo",
       "dps"
@@ -429,7 +395,7 @@
   "shadow_weave": {
     "name": "Shadow Weave",
     "cat": "weapon",
-    "tier": 4,
+    "tier": 3,
     "tags": [
       "escape",
       "burst",
@@ -463,25 +429,15 @@
   },
   "vampiric_burst": {
     "name": "Vampiric Burst",
-    "cat": "weapon",
+    "cat": "vitality",
     "tier": 4,
     "tags": [
       "lifesteal",
       "fire_rate",
-      "ammo"
+      "hp",
+      "bullet_armor"
     ],
-    "desc": "Active: huge fire rate and bullet lifesteal.",
-    "core": 1
-  },
-  "enduring_spirit": {
-    "name": "Enduring Spirit",
-    "cat": "vitality",
-    "tier": 1,
-    "tags": [
-      "lifesteal",
-      "hp"
-    ],
-    "desc": "Extra health and spirit lifesteal.",
+    "desc": "Active: a burst of fire rate and bullet lifesteal. Also gives health and bullet resistance.",
     "core": 1
   },
   "extra_health": {
@@ -548,16 +504,6 @@
     "desc": "Out-of-combat sprint speed and regen.",
     "core": 1
   },
-  "bullet_armor": {
-    "name": "Bullet Armor",
-    "cat": "vitality",
-    "tier": 2,
-    "tags": [
-      "bullet_armor"
-    ],
-    "desc": "Bullet resistance.",
-    "core": 1
-  },
   "bullet_lifesteal": {
     "name": "Bullet Lifesteal",
     "cat": "vitality",
@@ -569,17 +515,6 @@
     "desc": "Bullet damage heals you.",
     "core": 1
   },
-  "combat_barrier": {
-    "name": "Combat Barrier",
-    "cat": "vitality",
-    "tier": 2,
-    "tags": [
-      "shield",
-      "fire_rate"
-    ],
-    "desc": "A damage barrier when you engage, plus fire rate.",
-    "core": 1
-  },
   "debuff_reducer": {
     "name": "Debuff Reducer",
     "cat": "vitality",
@@ -588,18 +523,6 @@
       "cleanse"
     ],
     "desc": "Shorter duration on negative effects.",
-    "core": 1
-  },
-  "enchanters_barrier": {
-    "name": "Enchanter's Barrier",
-    "cat": "vitality",
-    "tier": 2,
-    "tags": [
-      "shield",
-      "spirit_power",
-      "cooldown"
-    ],
-    "desc": "Barrier when casting, plus spirit power and cooldown reduction.",
     "core": 1
   },
   "enduring_speed": {
@@ -665,16 +588,6 @@
     "desc": "Reflect part of incoming damage back to attackers.",
     "core": 1
   },
-  "spirit_armor": {
-    "name": "Spirit Armor",
-    "cat": "vitality",
-    "tier": 2,
-    "tags": [
-      "spirit_armor"
-    ],
-    "desc": "Spirit resistance.",
-    "core": 1
-  },
   "spirit_lifesteal": {
     "name": "Spirit Lifesteal",
     "cat": "vitality",
@@ -686,21 +599,10 @@
     "desc": "Spirit damage heals you.",
     "core": 1
   },
-  "debuff_remover": {
-    "name": "Debuff Remover",
-    "cat": "vitality",
-    "tier": 3,
-    "tags": [
-      "cleanse",
-      "escape"
-    ],
-    "desc": "Active: remove negative effects.",
-    "core": 1
-  },
   "divine_barrier": {
     "name": "Divine Barrier",
     "cat": "vitality",
-    "tier": 3,
+    "tier": 4,
     "tags": [
       "shield",
       "team"
@@ -728,26 +630,6 @@
       "regen"
     ],
     "desc": "Active: heal yourself and nearby allies.",
-    "core": 1
-  },
-  "improved_bullet_armor": {
-    "name": "Improved Bullet Armor",
-    "cat": "vitality",
-    "tier": 3,
-    "tags": [
-      "bullet_armor"
-    ],
-    "desc": "High bullet resistance.",
-    "core": 1
-  },
-  "improved_spirit_armor": {
-    "name": "Improved Spirit Armor",
-    "cat": "vitality",
-    "tier": 3,
-    "tags": [
-      "spirit_armor"
-    ],
-    "desc": "High spirit resistance.",
     "core": 1
   },
   "lifestrike": {
@@ -793,17 +675,6 @@
       "regen"
     ],
     "desc": "Active: heal an ally and pull them toward you.",
-    "core": 1
-  },
-  "superior_stamina": {
-    "name": "Superior Stamina",
-    "cat": "vitality",
-    "tier": 3,
-    "tags": [
-      "stamina",
-      "mobility"
-    ],
-    "desc": "More stamina, air jump and dash distance.",
     "core": 1
   },
   "veil_walker": {
@@ -889,17 +760,6 @@
     "desc": "Hitting heroes steals max health from them.",
     "core": 1
   },
-  "soul_rebirth": {
-    "name": "Soul Rebirth",
-    "cat": "vitality",
-    "tier": 4,
-    "tags": [
-      "escape",
-      "hp"
-    ],
-    "desc": "Revive once after dying, on a long cooldown.",
-    "core": 1
-  },
   "unstoppable": {
     "name": "Unstoppable",
     "cat": "vitality",
@@ -920,17 +780,6 @@
       "cooldown"
     ],
     "desc": "Spirit resistance; taking spirit damage reduces your cooldowns.",
-    "core": 1
-  },
-  "ammo_scavenger": {
-    "name": "Ammo Scavenger",
-    "cat": "spirit",
-    "tier": 1,
-    "tags": [
-      "ammo",
-      "spirit_power"
-    ],
-    "desc": "Collecting souls refills ammo and stacks spirit power.",
     "core": 1
   },
   "extra_charge": {
@@ -955,13 +804,15 @@
   },
   "infuser": {
     "name": "Infuser",
-    "cat": "spirit",
-    "tier": 1,
+    "cat": "vitality",
+    "tier": 4,
     "tags": [
       "spirit_power",
-      "lifesteal"
+      "lifesteal",
+      "hp",
+      "spirit_armor"
     ],
-    "desc": "Active: temporary spirit power and spirit lifesteal.",
+    "desc": "Active: temporary spirit power and spirit lifesteal. Also gives health and spirit resistance.",
     "core": 1
   },
   "mystic_burst": {
@@ -974,16 +825,6 @@
     ],
     "desc": "Big ability hits deal bonus damage on a cooldown.",
     "core": 1.2
-  },
-  "mystic_reach": {
-    "name": "Mystic Reach",
-    "cat": "spirit",
-    "tier": 1,
-    "tags": [
-      "ability_range"
-    ],
-    "desc": "Increased ability range.",
-    "core": 1
   },
   "mystic_regeneration": {
     "name": "Mystic Regeneration",
@@ -1020,7 +861,7 @@
   "decay": {
     "name": "Decay",
     "cat": "spirit",
-    "tier": 2,
+    "tier": 3,
     "tags": [
       "anti_heal",
       "dps"
@@ -1037,16 +878,6 @@
     ],
     "desc": "Abilities last longer.",
     "core": 1
-  },
-  "improved_cooldown": {
-    "name": "Improved Cooldown",
-    "cat": "spirit",
-    "tier": 2,
-    "tags": [
-      "cooldown"
-    ],
-    "desc": "Reduced ability cooldowns.",
-    "core": 1.3
   },
   "mystic_vulnerability": {
     "name": "Mystic Vulnerability",
@@ -1091,42 +922,10 @@
     "desc": "Your spirit damage reduces enemy fire rate.",
     "core": 1
   },
-  "withering_whip": {
-    "name": "Withering Whip",
-    "cat": "spirit",
-    "tier": 2,
-    "tags": [
-      "debuff",
-      "cc"
-    ],
-    "desc": "Active: reduce a target's fire rate and bullet resistance.",
-    "core": 1
-  },
-  "improved_burst": {
-    "name": "Improved Burst",
-    "cat": "spirit",
-    "tier": 3,
-    "tags": [
-      "burst",
-      "spirit_power"
-    ],
-    "desc": "A stronger Mystic Burst.",
-    "core": 1
-  },
-  "improved_reach": {
-    "name": "Improved Reach",
-    "cat": "spirit",
-    "tier": 3,
-    "tags": [
-      "ability_range"
-    ],
-    "desc": "Much larger ability range.",
-    "core": 1
-  },
   "improved_spirit": {
     "name": "Improved Spirit",
     "cat": "spirit",
-    "tier": 3,
+    "tier": 2,
     "tags": [
       "spirit_power"
     ],
@@ -1146,7 +945,7 @@
   "mystic_slow": {
     "name": "Mystic Slow",
     "cat": "spirit",
-    "tier": 3,
+    "tier": 2,
     "tags": [
       "cc"
     ],
@@ -1162,16 +961,6 @@
       "cooldown"
     ],
     "desc": "Faster charge recovery and extra charges.",
-    "core": 1
-  },
-  "silence_glyph": {
-    "name": "Silence Glyph",
-    "cat": "spirit",
-    "tier": 3,
-    "tags": [
-      "cc"
-    ],
-    "desc": "Active: silence a target so they can't use abilities.",
     "core": 1
   },
   "superior_cooldown": {
@@ -1237,16 +1026,6 @@
     ],
     "desc": "Huge spirit power and extra health.",
     "core": 1.3
-  },
-  "curse": {
-    "name": "Curse",
-    "cat": "spirit",
-    "tier": 4,
-    "tags": [
-      "cc"
-    ],
-    "desc": "Active: silence, disarm and weaken a target.",
-    "core": 1.1
   },
   "echo_shard": {
     "name": "Echo Shard",
@@ -1326,448 +1105,653 @@
     "name": "Extended Magazine",
     "cat": "weapon",
     "tier": 1,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "ammo",
+      "dps"
+    ],
+    "desc": "More ammo and a little extra weapon damage.",
+    "core": 1.3
   },
   "recharging_rush": {
     "name": "Recharging Rush",
     "cat": "weapon",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "ammo",
+      "dps",
+      "burst"
+    ],
+    "desc": "Bigger magazine and weapon damage, with a bonus after dealing a burst of damage.",
     "core": 1
   },
   "spirit_shredder": {
     "name": "Spirit Shredder",
     "cat": "weapon",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "lifesteal",
+      "spirit_power"
+    ],
+    "desc": "Your bullets lower enemy spirit resistance, and your abilities heal you.",
     "core": 1
   },
   "stalker": {
     "name": "Stalker",
     "cat": "weapon",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "mobility",
+      "close"
+    ],
+    "desc": "Quieter footsteps and move speed; a damage pulse near enemies lowers their bullet resistance.",
     "core": 1
   },
   "ballistic_enchantment": {
     "name": "Ballistic Enchantment",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "dps",
+      "ability_range",
+      "duration"
+    ],
+    "desc": "Using abilities grants stacking weapon damage; also more ability range and duration.",
     "core": 1
   },
   "blood_tribute": {
     "name": "Blood Tribute",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "fire_rate",
+      "mobility",
+      "cleanse"
+    ],
+    "desc": "Active: spend health for fire rate, move speed and status resistance.",
     "core": 1
   },
   "cultist_sacrifice": {
     "name": "Cultist Sacrifice",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "farm",
+      "hp"
+    ],
+    "desc": "Bonus weapon damage and bullet resistance against troopers and camps; helps you farm.",
+    "core": 0.9
   },
   "express_shot": {
     "name": "Express Shot",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "range",
+      "burst",
+      "dps"
+    ],
+    "desc": "Faster bullets; periodically a shot deals big bonus damage.",
     "core": 1
   },
   "hollow_point": {
     "name": "Hollow Point",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "dps",
+      "debuff",
+      "hp"
+    ],
+    "desc": "Weapon damage and health; bullets lower enemy bullet resistance.",
+    "core": 1.1
   },
   "spirit_rend": {
     "name": "Spirit Rend",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "lifesteal",
+      "spirit_power"
+    ],
+    "desc": "Bullets stack up to lower enemy spirit resistance; abilities heal you.",
     "core": 1
   },
   "weighted_shots": {
     "name": "Weighted Shots",
     "cat": "weapon",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "cc",
+      "dps"
+    ],
+    "desc": "Weapon damage; repeated hits slow the target.",
     "core": 1
   },
   "armor_piercer": {
     "name": "Armor Piercer",
     "cat": "weapon",
     "tier": 4,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "dps",
+      "range",
+      "anti_tank"
+    ],
+    "desc": "Faster bullets with a chance to ignore part of enemy bullet resistance.",
+    "core": 1.1
   },
   "capacitor": {
     "name": "Capacitor",
     "cat": "weapon",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "dps",
+      "burst",
+      "cc",
+      "fire_rate"
+    ],
+    "desc": "Fire rate; shots can chain lightning between enemies and slow them.",
     "core": 1
   },
   "crushing_fists": {
     "name": "Crushing Fists",
     "cat": "weapon",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "melee",
+      "cc",
+      "debuff",
+      "bullet_armor"
+    ],
+    "desc": "Much stronger melee; heavy melee stuns and lowers enemy bullet resistance.",
     "core": 1
   },
   "spellslinger": {
     "name": "Spellslinger",
     "cat": "weapon",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "fire_rate",
+      "cooldown",
+      "ammo"
+    ],
+    "desc": "Casting abilities stacks fire rate and reload speed; also cooldown reduction.",
     "core": 1
   },
   "grit": {
     "name": "Grit",
     "cat": "vitality",
     "tier": 1,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "shield",
+      "regen"
+    ],
+    "desc": "Health regen out of combat and a barrier when a fight starts.",
     "core": 1
   },
   "rebuttal": {
     "name": "Rebuttal",
     "cat": "vitality",
     "tier": 1,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "melee",
+      "hp"
+    ],
+    "desc": "Successful parries heal you and boost your damage; also reduces melee damage taken.",
     "core": 1
   },
   "battle_vest": {
     "name": "Battle Vest",
     "cat": "vitality",
     "tier": 2,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "bullet_armor",
+      "fire_rate",
+      "dps"
+    ],
+    "desc": "Bullet resistance with a little weapon damage and fire rate.",
+    "core": 1.2
   },
   "enchanters_emblem": {
     "name": "Enchanter's Emblem",
     "cat": "vitality",
     "tier": 2,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "spirit_armor",
+      "spirit_power",
+      "cooldown"
+    ],
+    "desc": "Spirit resistance, spirit power and cooldown reduction.",
+    "core": 1.2
   },
   "guardian_ward": {
     "name": "Guardian Ward",
     "cat": "vitality",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "team",
+      "shield",
+      "mobility"
+    ],
+    "desc": "Active: give an ally a barrier and move speed.",
     "core": 1
   },
   "spirit_shielding": {
     "name": "Spirit Shielding",
     "cat": "vitality",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "shield",
+      "spirit_armor"
+    ],
+    "desc": "A barrier when you take heavy spirit damage, plus spirit resistance.",
     "core": 1
   },
   "trophy_collector": {
     "name": "Trophy Collector",
     "cat": "vitality",
     "tier": 2,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "farm",
+      "mobility",
+      "ability_range"
+    ],
+    "desc": "Stacks up over time to give sprint speed, ability range and extra souls.",
+    "core": 0.9
   },
   "weapon_shielding": {
     "name": "Weapon Shielding",
     "cat": "vitality",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "shield",
+      "bullet_armor"
+    ],
+    "desc": "A barrier when you take heavy bullet damage, plus bullet resistance.",
     "core": 1
   },
   "bullet_resilience": {
     "name": "Bullet Resilience",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "bullet_armor"
+    ],
+    "desc": "High bullet resistance, with even more at low health.",
+    "core": 1.1
   },
   "counterspell": {
     "name": "Counterspell",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "spirit_armor",
+      "spirit_power",
+      "hp"
+    ],
+    "desc": "Parry an incoming ability to block it and heal. Also gives spirit power and health.",
     "core": 1
   },
   "dispel_magic": {
     "name": "Dispel Magic",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "cleanse",
+      "escape",
+      "spirit_armor"
+    ],
+    "desc": "Active: remove negative effects, heal and gain move speed.",
+    "core": 1.1
   },
   "fury_trance": {
     "name": "Fury Trance",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "fire_rate",
+      "lifesteal",
+      "mobility",
+      "hp"
+    ],
+    "desc": "Active: a burst of fire rate and move speed. Also gives bullet lifesteal and health.",
     "core": 1
   },
   "spirit_resilience": {
     "name": "Spirit Resilience",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "spirit_armor"
+    ],
+    "desc": "High spirit resistance, with even more at low health.",
+    "core": 1.1
   },
   "stamina_mastery": {
     "name": "Stamina Mastery",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "stamina",
+      "mobility"
+    ],
+    "desc": "More stamina, faster stamina recovery and better air control.",
     "core": 1
   },
   "warp_stone": {
     "name": "Warp Stone",
     "cat": "vitality",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "escape",
+      "mobility"
+    ],
+    "desc": "Active: teleport a short distance and gain bullet resistance.",
     "core": 1
   },
   "cheat_death": {
     "name": "Cheat Death",
     "cat": "vitality",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "escape",
+      "hp",
+      "bullet_armor"
+    ],
+    "desc": "Briefly prevents you from dying when you would take lethal damage.",
     "core": 1
   },
   "healing_tempo": {
     "name": "Healing Tempo",
     "cat": "vitality",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "regen",
+      "team",
+      "mobility"
+    ],
+    "desc": "Healing you cast or receive grants fire rate and move speed; better regen.",
     "core": 1
   },
   "indomitable": {
     "name": "Indomitable",
     "cat": "vitality",
     "tier": 4,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "bullet_armor",
+      "spirit_armor",
+      "shield"
+    ],
+    "desc": "Bullet and spirit resistance plus a periodic barrier.",
+    "core": 1.1
   },
   "juggernaut": {
     "name": "Juggernaut",
     "cat": "vitality",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "mobility",
+      "regen"
+    ],
+    "desc": "Resist slows and regenerate health; enemies who hit you get their fire rate slowed.",
     "core": 1
   },
   "plated_armor": {
     "name": "Plated Armor",
     "cat": "vitality",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "bullet_armor",
+      "hp"
+    ],
+    "desc": "Health and a chance to deflect incoming bullets.",
     "core": 1
   },
   "spellbreaker": {
     "name": "Spellbreaker",
     "cat": "vitality",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "spirit_armor",
+      "cleanse",
+      "hp"
+    ],
+    "desc": "Spirit resistance, status resistance and less damage from big spirit hits.",
     "core": 1
   },
   "golden_goose_egg": {
     "name": "Golden Goose Egg",
     "cat": "spirit",
     "tier": 1,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "farm",
+      "mobility",
+      "regen"
+    ],
+    "desc": "Active: earn souls faster and sprint quicker, at the cost of dealing less damage.",
+    "core": 0.8
   },
   "mystic_expansion": {
     "name": "Mystic Expansion",
     "cat": "spirit",
     "tier": 1,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "ability_range"
+    ],
+    "desc": "Increases ability range.",
     "core": 1
   },
   "rusted_barrel": {
     "name": "Rusted Barrel",
     "cat": "spirit",
     "tier": 1,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "hp"
+    ],
+    "desc": "Active: lower a target's fire rate and bullet resistance. Also gives some health.",
     "core": 1
   },
   "arcane_surge": {
     "name": "Arcane Surge",
     "cat": "spirit",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "stamina",
+      "duration",
+      "ability_range",
+      "spirit_power"
+    ],
+    "desc": "More stamina; dashing empowers your next ability with extra range and duration.",
     "core": 1
   },
   "bullet_resist_shredder": {
     "name": "Bullet Resist Shredder",
     "cat": "spirit",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "dps"
+    ],
+    "desc": "Your spirit damage lowers enemy bullet resistance.",
     "core": 1
   },
   "compress_cooldown": {
     "name": "Compress Cooldown",
     "cat": "spirit",
     "tier": 2,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "cooldown"
+    ],
+    "desc": "Reduced ability cooldowns.",
+    "core": 1.3
   },
   "spirit_sap": {
     "name": "Spirit Sap",
     "cat": "spirit",
     "tier": 2,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "hp"
+    ],
+    "desc": "Active: lower a target's spirit resistance and spirit power.",
     "core": 1
   },
   "disarming_hex": {
     "name": "Disarming Hex",
     "cat": "spirit",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "cc",
+      "debuff",
+      "hp"
+    ],
+    "desc": "Active: disarm a target so they can't shoot, and lower their bullet resistance.",
     "core": 1
   },
   "greater_expansion": {
     "name": "Greater Expansion",
     "cat": "spirit",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "ability_range",
+      "spirit_armor"
+    ],
+    "desc": "Much larger ability range, plus spirit resistance.",
     "core": 1
   },
   "radiant_regeneration": {
     "name": "Radiant Regeneration",
     "cat": "spirit",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "regen",
+      "hp",
+      "mobility"
+    ],
+    "desc": "Casting abilities heals you over time and gives move speed.",
     "core": 1
   },
   "silence_wave": {
     "name": "Silence Wave",
     "cat": "spirit",
     "tier": 3,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "cc",
+      "burst"
+    ],
+    "desc": "Active: a wave that damages and silences enemies.",
+    "core": 1.1
   },
   "spirit_snatch": {
     "name": "Spirit Snatch",
     "cat": "spirit",
     "tier": 3,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "melee",
+      "spirit_power",
+      "spirit_armor"
+    ],
+    "desc": "Melee hits deal bonus spirit damage and grant you spirit power and spirit resistance.",
     "core": 1
   },
   "arctic_blast": {
     "name": "Arctic Blast",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "cc",
+      "burst",
+      "spirit_armor"
+    ],
+    "desc": "Active: a freezing blast that damages and freezes nearby enemies.",
     "core": 1
   },
   "cursed_relic": {
     "name": "Cursed Relic",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "cc",
+      "debuff"
+    ],
+    "desc": "Active: silence and disarm a target and reduce the damage they deal.",
+    "core": 1.1
   },
   "focus_lens": {
     "name": "Focus Lens",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "debuff",
+      "cc",
+      "burst"
+    ],
+    "desc": "Active: lower a target's spirit resistance and spirit power and briefly silence them. Also gives fire rate.",
     "core": 1
   },
   "lightning_scroll": {
     "name": "Lightning Scroll",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "cc",
+      "burst",
+      "hp"
+    ],
+    "desc": "Hits a target with a delayed stun, bonus damage and a slow. Also gives health and sprint speed.",
     "core": 1
   },
   "mercurial_magnum": {
     "name": "Mercurial Magnum",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "spirit_power",
+      "ammo",
+      "fire_rate",
+      "burst"
+    ],
+    "desc": "Spirit power, a bigger magazine and fire rate; bullets deal bonus spirit damage.",
     "core": 1
   },
   "scourge": {
     "name": "Scourge",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "close",
+      "anti_tank",
+      "cleanse",
+      "spirit_armor"
+    ],
+    "desc": "Active: an aura that damages nearby enemies based on their max health, while giving you spirit and status resistance.",
     "core": 1
   },
   "spirit_burn": {
     "name": "Spirit Burn",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
+    "tags": [
+      "anti_heal",
+      "burst",
+      "ability_range"
+    ],
+    "desc": "Big spirit hits set off a burning explosion that also reduces enemy healing.",
     "core": 1
   },
   "vortex_web": {
     "name": "Vortex Web",
     "cat": "spirit",
     "tier": 4,
-    "tags": [],
-    "desc": "",
-    "core": 1
+    "tags": [
+      "cc",
+      "ability_range"
+    ],
+    "desc": "Active: throw a web that pulls in and immobilizes enemies caught in it.",
+    "core": 1.1
   }
 }

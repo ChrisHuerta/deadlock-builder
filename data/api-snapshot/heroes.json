@@ -8,6 +8,10 @@
     "name": "Apollo"
   },
   {
+    "id": "baba",
+    "name": "Baba"
+  },
+  {
     "id": "bebop",
     "name": "Bebop"
   },
@@ -146,6 +150,10 @@
   {
     "id": "vindicta",
     "name": "Vindicta"
+  },
+  {
+    "id": "violet",
+    "name": "Violet"
   },
   {
     "id": "viscous",

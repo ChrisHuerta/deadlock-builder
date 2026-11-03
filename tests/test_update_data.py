@@ -57,10 +57,14 @@ class TestParseHeroes(unittest.TestCase):
         ])
         self.assertEqual([h["id"] for h in heroes], ["haze", "null_flags"])
 
-    def test_in_development_is_opt_in(self):
-        payload = [hero("Haze"), hero("Violet", in_development=True)]
-        self.assertEqual(len(ud.parse_api_heroes(payload)[0]), 1)
-        self.assertEqual(len(ud.parse_api_heroes(payload, include_in_development=True)[0]), 2)
+    def test_development_state_wins_over_stale_flag(self):
+        heroes, _ = ud.parse_api_heroes([
+            hero("Haze", development_state="release"),
+            hero("Violet", development_state="release", in_development=True),  # real API case
+            hero("Upcoming", development_state="hero_labs"),
+            hero("No State", in_development=True),  # falls back to the old flag
+        ])
+        self.assertEqual([h["id"] for h in heroes], ["haze", "violet"])
 
     def test_skips_malicious_and_duplicates(self):
         heroes, warnings = ud.parse_api_heroes([
