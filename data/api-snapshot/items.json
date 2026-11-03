@@ -1,0 +1,1094 @@
+[
+  {
+    "id": "close_quarters",
+    "name": "Close Quarters",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "extended_magazine",
+    "name": "Extended Magazine",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "headshot_booster",
+    "name": "Headshot Booster",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "high_velocity_rounds",
+    "name": "High-Velocity Rounds",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "monster_rounds",
+    "name": "Monster Rounds",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "rapid_rounds",
+    "name": "Rapid Rounds",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "restorative_shot",
+    "name": "Restorative Shot",
+    "cat": "weapon",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "active_reload",
+    "name": "Active Reload",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "fleetfoot",
+    "name": "Fleetfoot",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "intensifying_magazine",
+    "name": "Intensifying Magazine",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "kinetic_dash",
+    "name": "Kinetic Dash",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "long_range",
+    "name": "Long Range",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "melee_charge",
+    "name": "Melee Charge",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "mystic_shot",
+    "name": "Mystic Shot",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "opening_rounds",
+    "name": "Opening Rounds",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "recharging_rush",
+    "name": "Recharging Rush",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "slowing_bullets",
+    "name": "Slowing Bullets",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "spirit_shredder",
+    "name": "Spirit Shredder",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "split_shot",
+    "name": "Split Shot",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "stalker",
+    "name": "Stalker",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "swift_striker",
+    "name": "Swift Striker",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "titanic_magazine",
+    "name": "Titanic Magazine",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "weakening_headshot",
+    "name": "Weakening Headshot",
+    "cat": "weapon",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "alchemical_fire",
+    "name": "Alchemical Fire",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "ballistic_enchantment",
+    "name": "Ballistic Enchantment",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "berserker",
+    "name": "Berserker",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "blood_tribute",
+    "name": "Blood Tribute",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "burst_fire",
+    "name": "Burst Fire",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "cultist_sacrifice",
+    "name": "Cultist Sacrifice",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "escalating_resilience",
+    "name": "Escalating Resilience",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "express_shot",
+    "name": "Express Shot",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "headhunter",
+    "name": "Headhunter",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "heroic_aura",
+    "name": "Heroic Aura",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "hollow_point",
+    "name": "Hollow Point",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "hunters_aura",
+    "name": "Hunter's Aura",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "point_blank",
+    "name": "Point Blank",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "shadow_weave",
+    "name": "Shadow Weave",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "sharpshooter",
+    "name": "Sharpshooter",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "spirit_rend",
+    "name": "Spirit Rend",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "tesla_bullets",
+    "name": "Tesla Bullets",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "toxic_bullets",
+    "name": "Toxic Bullets",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "weighted_shots",
+    "name": "Weighted Shots",
+    "cat": "weapon",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "armor_piercer",
+    "name": "Armor Piercer",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "capacitor",
+    "name": "Capacitor",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "crippling_headshot",
+    "name": "Crippling Headshot",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "crushing_fists",
+    "name": "Crushing Fists",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "frenzy",
+    "name": "Frenzy",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "glass_cannon",
+    "name": "Glass Cannon",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "lucky_shot",
+    "name": "Lucky Shot",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "ricochet",
+    "name": "Ricochet",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "silencer",
+    "name": "Silencer",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "spellslinger",
+    "name": "Spellslinger",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "spiritual_overflow",
+    "name": "Spiritual Overflow",
+    "cat": "weapon",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "extra_health",
+    "name": "Extra Health",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "extra_regen",
+    "name": "Extra Regen",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "extra_stamina",
+    "name": "Extra Stamina",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "grit",
+    "name": "Grit",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "healing_rite",
+    "name": "Healing Rite",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "melee_lifesteal",
+    "name": "Melee Lifesteal",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "rebuttal",
+    "name": "Rebuttal",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "sprint_boots",
+    "name": "Sprint Boots",
+    "cat": "vitality",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "battle_vest",
+    "name": "Battle Vest",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "bullet_lifesteal",
+    "name": "Bullet Lifesteal",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "debuff_reducer",
+    "name": "Debuff Reducer",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "enchanters_emblem",
+    "name": "Enchanter's Emblem",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "enduring_speed",
+    "name": "Enduring Speed",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "guardian_ward",
+    "name": "Guardian Ward",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "healbane",
+    "name": "Healbane",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "healing_booster",
+    "name": "Healing Booster",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "reactive_barrier",
+    "name": "Reactive Barrier",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "restorative_locket",
+    "name": "Restorative Locket",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "return_fire",
+    "name": "Return Fire",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "spirit_lifesteal",
+    "name": "Spirit Lifesteal",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "spirit_shielding",
+    "name": "Spirit Shielding",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "trophy_collector",
+    "name": "Trophy Collector",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "weapon_shielding",
+    "name": "Weapon Shielding",
+    "cat": "vitality",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "bullet_resilience",
+    "name": "Bullet Resilience",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "counterspell",
+    "name": "Counterspell",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "dispel_magic",
+    "name": "Dispel Magic",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "fortitude",
+    "name": "Fortitude",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "fury_trance",
+    "name": "Fury Trance",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "healing_nova",
+    "name": "Healing Nova",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "lifestrike",
+    "name": "Lifestrike",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "majestic_leap",
+    "name": "Majestic Leap",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "metal_skin",
+    "name": "Metal Skin",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "rescue_beam",
+    "name": "Rescue Beam",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "spirit_resilience",
+    "name": "Spirit Resilience",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "stamina_mastery",
+    "name": "Stamina Mastery",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "veil_walker",
+    "name": "Veil Walker",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "warp_stone",
+    "name": "Warp Stone",
+    "cat": "vitality",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "cheat_death",
+    "name": "Cheat Death",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "colossus",
+    "name": "Colossus",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "divine_barrier",
+    "name": "Divine Barrier",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "diviners_kevlar",
+    "name": "Diviner's Kevlar",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "healing_tempo",
+    "name": "Healing Tempo",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "indomitable",
+    "name": "Indomitable",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "infuser",
+    "name": "Infuser",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "inhibitor",
+    "name": "Inhibitor",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "juggernaut",
+    "name": "Juggernaut",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "leech",
+    "name": "Leech",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "phantom_strike",
+    "name": "Phantom Strike",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "plated_armor",
+    "name": "Plated Armor",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "siphon_bullets",
+    "name": "Siphon Bullets",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "spellbreaker",
+    "name": "Spellbreaker",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "unstoppable",
+    "name": "Unstoppable",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "vampiric_burst",
+    "name": "Vampiric Burst",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "witchmail",
+    "name": "Witchmail",
+    "cat": "vitality",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "extra_charge",
+    "name": "Extra Charge",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "extra_spirit",
+    "name": "Extra Spirit",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "golden_goose_egg",
+    "name": "Golden Goose Egg",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "mystic_burst",
+    "name": "Mystic Burst",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "mystic_expansion",
+    "name": "Mystic Expansion",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "mystic_regeneration",
+    "name": "Mystic Regeneration",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "rusted_barrel",
+    "name": "Rusted Barrel",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "spirit_strike",
+    "name": "Spirit Strike",
+    "cat": "spirit",
+    "tier": 1,
+    "cost": 800
+  },
+  {
+    "id": "arcane_surge",
+    "name": "Arcane Surge",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "bullet_resist_shredder",
+    "name": "Bullet Resist Shredder",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "cold_front",
+    "name": "Cold Front",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "compress_cooldown",
+    "name": "Compress Cooldown",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "duration_extender",
+    "name": "Duration Extender",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "improved_spirit",
+    "name": "Improved Spirit",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "mystic_slow",
+    "name": "Mystic Slow",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "mystic_vulnerability",
+    "name": "Mystic Vulnerability",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "quicksilver_reload",
+    "name": "Quicksilver Reload",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "slowing_hex",
+    "name": "Slowing Hex",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "spirit_sap",
+    "name": "Spirit Sap",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "suppressor",
+    "name": "Suppressor",
+    "cat": "spirit",
+    "tier": 2,
+    "cost": 1600
+  },
+  {
+    "id": "decay",
+    "name": "Decay",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "disarming_hex",
+    "name": "Disarming Hex",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "greater_expansion",
+    "name": "Greater Expansion",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "knockdown",
+    "name": "Knockdown",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "radiant_regeneration",
+    "name": "Radiant Regeneration",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "rapid_recharge",
+    "name": "Rapid Recharge",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "silence_wave",
+    "name": "Silence Wave",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "spirit_snatch",
+    "name": "Spirit Snatch",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "superior_cooldown",
+    "name": "Superior Cooldown",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "superior_duration",
+    "name": "Superior Duration",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "surge_of_power",
+    "name": "Surge of Power",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "tankbuster",
+    "name": "Tankbuster",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "torment_pulse",
+    "name": "Torment Pulse",
+    "cat": "spirit",
+    "tier": 3,
+    "cost": 3200
+  },
+  {
+    "id": "arctic_blast",
+    "name": "Arctic Blast",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "boundless_spirit",
+    "name": "Boundless Spirit",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "cursed_relic",
+    "name": "Cursed Relic",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "echo_shard",
+    "name": "Echo Shard",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "escalating_exposure",
+    "name": "Escalating Exposure",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "ethereal_shift",
+    "name": "Ethereal Shift",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "focus_lens",
+    "name": "Focus Lens",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "lightning_scroll",
+    "name": "Lightning Scroll",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "magic_carpet",
+    "name": "Magic Carpet",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "mercurial_magnum",
+    "name": "Mercurial Magnum",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "mystic_reverb",
+    "name": "Mystic Reverb",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "refresher",
+    "name": "Refresher",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "scourge",
+    "name": "Scourge",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "spirit_burn",
+    "name": "Spirit Burn",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "transcendent_cooldown",
+    "name": "Transcendent Cooldown",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  },
+  {
+    "id": "vortex_web",
+    "name": "Vortex Web",
+    "cat": "spirit",
+    "tier": 4,
+    "cost": 6400
+  }
+]

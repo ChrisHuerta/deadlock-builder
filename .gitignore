@@ -6,6 +6,14 @@ desktop.ini
 .idea/
 *.swp
 
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Leftover temp files from tools/update_data.py (only if it was interrupted)
+.tmp-*
+
 # Dependencies / build output (if tooling is added later)
 node_modules/
 dist/

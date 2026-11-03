@@ -1,3 +1,15 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   styles.css — all visual styling
+   ═══════════════════════════════════════════════════════════════════════
+   CSS rules look like:  selector { property: value; }
+     .item      → elements with class="item"
+     #hero      → the element with id="hero"
+     .a .b      → .b elements inside .a
+   Colors live in "custom properties" (variables) on :root below and are
+   used with var(--name). Change a color once here and it updates everywhere.
+   The category colors (--weapon, --spirit, --vitality) are used for the
+   sliders, badges, item borders and the distribution bar. */
+
 :root {
   --bg: #0f0d0b;
   --bg-2: #17140f;

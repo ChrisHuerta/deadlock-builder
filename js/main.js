@@ -1,16 +1,40 @@
-// UI wiring. All DOM content is created with createElement/textContent —
-// never innerHTML — so data (including saved build names) can't inject markup.
+// ═══════════════════════════════════════════════════════════════════════════
+// main.js — connects the page (HTML) to the logic (engine.js / state.js)
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// index.html loads this file with <script type="module">. It:
+//   1. fills in the controls (hero dropdown, priority chips, game-plan buttons),
+//   2. listens for clicks/drags ("events") and updates the `state` object,
+//   3. after every change calls render(), which asks the engine for a build
+//      and redraws the results.
+//
+// The flow is always one direction (like a simple game loop):
+//
+//     user input ──► update(patch) ──► state ──► render() ──► page
+//
+// Terms you'll see:
+//   • DOM — the page as a tree of objects JS can read/change. document.getElementById('x')
+//     finds the element with id="x" in index.html.
+//   • addEventListener('click', fn) — "call fn when this is clicked" (a callback).
+//   • async/await — like Python's asyncio: `await` pauses until a slow task finishes.
+//
+// SECURITY: every piece of text is inserted with createElement + textContent
+// (via the el() helper below). We NEVER use innerHTML, which would interpret
+// text as HTML — so a saved build named "<img onerror=...>" just shows those
+// characters instead of running anything.
 
-import { CATEGORIES, TIER_COST, ITEM_BY_ID } from './data/items.js';
+import { CATEGORIES, TIER_COST, ITEM_BY_ID, DATA_SOURCE } from './data/items.js';
 import { HEROES, HERO_BY_ID } from './data/heroes.js';
 import { PRIORITIES, GAME_PLANS } from './data/priorities.js';
 import { generateBuild, TOTAL_SLOTS } from './engine.js';
 import { defaultState, sanitizeState, encodeState, decodeState } from './state.js';
 import { loadSaved, saveBuild, deleteBuild, cleanName } from './storage.js';
 
+// Shortcut: $('hero') instead of document.getElementById('hero').
 const $ = (id) => document.getElementById(id);
 const CATS = Object.keys(CATEGORIES);
 
+// Slider values applied by the quick preset buttons under the sliders.
 const PRESETS = {
   weapon: { weapon: 70, spirit: 10, vitality: 20 },
   spirit: { weapon: 10, spirit: 65, vitality: 25 },
@@ -18,10 +42,16 @@ const PRESETS = {
   balanced: { weapon: 35, spirit: 35, vitality: 30 },
 };
 
-/** Tiny element helper: el('div', {class: 'x'}, 'text', childNode) */
+/**
+ * Safe element builder.
+ *   el('div', { class: 'card' }, 'Hello ', el('strong', {}, 'world'))
+ * creates <div class="card">Hello <strong>world</strong></div>.
+ * Strings always become text nodes, never HTML — this is the XSS protection.
+ * (`...children` gathers extra arguments into a list, like *args in Python.)
+ */
 function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
+  for (const [k, v] of Object.entries(attrs)) {        // ≈ for k, v in attrs.items()
     if (v === undefined || v === null || v === false) continue;
     if (k === 'class') node.className = v;
     else if (k === 'dataset') Object.assign(node.dataset, v);
@@ -34,27 +64,38 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
+// 6400 → "6,400"
 const fmt = (n) => n.toLocaleString('en-US');
 
+// The single source of truth for what the user picked. Start from the share
+// link in the URL if there is one, otherwise the defaults. `let` because we
+// replace it on every change.
 let state = decodeState(location.hash) || defaultState();
 
-// ───────────────────────── Controls ─────────────────────────
+// ───────────────────────── Controls (run once at startup) ─────────────────────────
 
 function initControls() {
+  // Hero dropdown: one <option> per hero. Changing hero also applies that
+  // hero's suggested slider values (`lean`); the user can tweak them after.
   const heroSel = $('hero');
   heroSel.append(el('option', { value: '' }, 'Any hero'));
   for (const h of HEROES) heroSel.append(el('option', { value: h.id }, h.name));
   heroSel.addEventListener('change', () => {
     const hero = HERO_BY_ID.get(heroSel.value);
+    // `...(cond ? {focus} : {})` adds the focus key only when a hero was picked.
     update({ hero: hero ? hero.id : '', ...(hero ? { focus: { ...hero.lean } } : {}) });
   });
 
+  // Sliders: 'input' fires continuously while dragging, so results update live.
   for (const cat of CATS) {
     $(`focus-${cat}`).addEventListener('input', (e) => {
+      // `[cat]: value` sets a key whose name is in a variable (≈ {**focus, cat: value}).
       update({ focus: { ...state.focus, [cat]: Number(e.target.value) } });
     });
   }
 
+  // Preset buttons: one listener on the container handles all four buttons
+  // ("event delegation"); data-preset="..." in the HTML says which preset.
   $('presets').addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-preset]');
     if (!btn) return;
@@ -62,17 +103,20 @@ function initControls() {
     if (preset) update({ focus: { ...preset } });
   });
 
+  // Priority chips: a hidden checkbox inside a styled <label> for each priority.
   const prioWrap = $('priorities');
   for (const p of PRIORITIES) {
     const input = el('input', { type: 'checkbox', value: p.id, id: `prio-${p.id}` });
     input.addEventListener('change', () => {
       const set = new Set(state.priorities);
       if (input.checked) set.add(p.id); else set.delete(p.id);
+      // Keep the same order as the PRIORITIES list so share links are stable.
       update({ priorities: PRIORITIES.map((x) => x.id).filter((id) => set.has(id)) });
     });
     prioWrap.append(el('label', { class: 'chip', for: `prio-${p.id}` }, input, el('span', {}, p.label)));
   }
 
+  // Game plan: radio buttons (only one can be selected).
   const planWrap = $('plans');
   for (const g of GAME_PLANS) {
     const input = el('input', { type: 'radio', name: 'plan', value: g.id, id: `plan-${g.id}` });
@@ -80,30 +124,41 @@ function initControls() {
     planWrap.append(el('label', { for: `plan-${g.id}` }, input, el('span', {}, g.label)));
   }
 
+  // Remaining buttons.
   $('reset').addEventListener('click', () => { state = defaultState(); render(); });
   $('clear-banned').addEventListener('click', () => update({ banned: [] }));
   $('copy-link').addEventListener('click', copyLink);
   $('save').addEventListener('click', onSave);
   $('save-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); onSave(); } });
+  // The controls are a <form>; stop Enter from "submitting" and reloading the page.
   $('controls').addEventListener('submit', (e) => e.preventDefault());
 
+  // If the user pastes a different share link into the address bar (or hits
+  // Back), load that build.
   window.addEventListener('hashchange', () => {
     const next = decodeState(location.hash);
     if (next && encodeState(next) !== encodeState(state)) { state = next; render(); }
   });
 }
 
+/** Make the controls show what's in `state` (needed after loading a link/saved build). */
 function syncControls() {
   $('hero').value = state.hero;
   const total = CATS.reduce((s, c) => s + state.focus[c], 0) || 1;
   for (const cat of CATS) {
     $(`focus-${cat}`).value = String(state.focus[cat]);
+    // Show each slider as a share of the total, so the three always add to ~100%.
     $(`out-${cat}`).value = `${Math.round((state.focus[cat] / total) * 100)}%`;
   }
   for (const p of PRIORITIES) $(`prio-${p.id}`).checked = state.priorities.includes(p.id);
   for (const g of GAME_PLANS) $(`plan-${g.id}`).checked = state.plan === g.id;
 }
 
+/**
+ * The ONLY way controls change state: merge `patch` into state, validate it,
+ * and redraw. Running sanitizeState here too means even a bug in the UI
+ * can't put invalid data into the state.
+ */
 function update(patch) {
   state = sanitizeState({ ...state, ...patch });
   render();
@@ -111,21 +166,26 @@ function update(patch) {
 
 // ───────────────────────── Results ─────────────────────────
 
+/** The colored bar showing how many slots each category got. */
 function renderDistribution(quotas) {
   const wrap = $('distribution');
-  wrap.replaceChildren();
+  wrap.replaceChildren(); // clear old content
   for (const cat of CATS) {
     if (!quotas[cat]) continue;
     const seg = el('div', { class: `seg ${cat}`, title: `${CATEGORIES[cat].label}: ${quotas[cat]} items` },
       `${CATEGORIES[cat].label} ${quotas[cat]}`);
-    seg.style.flexGrow = String(quotas[cat]); // CSSOM: allowed under CSP
+    // Segment width ∝ item count. Setting .style from JS is allowed by our
+    // Content Security Policy (inline style="" attributes in HTML are not).
+    seg.style.flexGrow = String(quotas[cat]);
     wrap.append(seg);
   }
 }
 
+/** One item card: badge, name, cost, description, "Fits: ..." reasons, Swap button. */
 function itemCard(pick) {
-  const { item, reasons } = pick;
+  const { item, reasons } = pick; // ≈ item, reasons = pick["item"], pick["reasons"]
   const swap = el('button', { type: 'button', class: 'swap', title: `Exclude ${item.name} and pick an alternative`, 'aria-label': `Swap out ${item.name}` }, 'Swap');
+  // Swap = add to the banned list; the engine then picks the next-best item.
   swap.addEventListener('click', () => update({ banned: [...state.banned, item.id] }));
 
   return el('li', { class: `item ${item.cat}` },
@@ -142,6 +202,7 @@ function itemCard(pick) {
   );
 }
 
+/** Draw the whole results panel from the engine's output. */
 function renderBuild(build) {
   const hero = HERO_BY_ID.get(state.hero);
   $('build-title').textContent = hero ? `Recommended build: ${hero.name}` : 'Recommended build';
@@ -150,6 +211,7 @@ function renderBuild(build) {
 
   renderDistribution(build.quotas);
 
+  // One section per phase, with that phase's cost and the running total.
   let running = 0;
   const phases = build.phases.map((phase) => {
     const cost = phase.items.reduce((s, p) => s + TIER_COST[p.item.tier], 0);
@@ -165,10 +227,11 @@ function renderBuild(build) {
   });
   $('phases').replaceChildren(...phases);
 
+  // "Excluded:" row — click an item to allow it again.
   const bannedWrap = $('banned-wrap');
   bannedWrap.hidden = state.banned.length === 0;
   $('banned').replaceChildren(...state.banned.map((id) => {
-    const item = ITEM_BY_ID.get(id);
+    const item = ITEM_BY_ID.get(id); // always exists: sanitizeState only keeps known ids
     const b = el('button', { type: 'button', class: 'chip-btn', 'aria-label': `Allow ${item.name} again` }, `${item.name} ✕`);
     b.addEventListener('click', () => update({ banned: state.banned.filter((x) => x !== id) }));
     return b;
@@ -179,12 +242,14 @@ function renderBuild(build) {
 
 // ───────────────────────── Share & save ─────────────────────────
 
+/** Current page address with the build encoded after '#'. */
 function shareUrl() {
   const url = new URL(location.href);
   url.hash = encodeState(state);
   return url.toString();
 }
 
+/** Copy the share link to the clipboard (async because the browser may ask permission). */
 async function copyLink() {
   const status = $('copy-status');
   try {
@@ -193,9 +258,10 @@ async function copyLink() {
   } catch {
     status.textContent = 'Copy failed. Copy the address bar instead.';
   }
-  setTimeout(() => { status.textContent = ''; }, 2500);
+  setTimeout(() => { status.textContent = ''; }, 2500); // clear message after 2.5 s
 }
 
+/** Save the current build under the typed name (or a sensible default). */
 function onSave() {
   const input = $('save-name');
   const hero = HERO_BY_ID.get(state.hero);
@@ -205,6 +271,7 @@ function onSave() {
   else renderSaved(loadSaved(), 'Could not save: browser storage is unavailable.');
 }
 
+/** Draw the saved-builds list with Load / Delete buttons. */
 function renderSaved(list = loadSaved(), error = '') {
   const ul = $('saved');
   if (error) { ul.replaceChildren(el('li', { class: 'empty' }, error)); return; }
@@ -214,6 +281,7 @@ function renderSaved(list = loadSaved(), error = '') {
     load.addEventListener('click', () => { state = sanitizeState(entry.state); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
     const del = el('button', { type: 'button', class: 'ghost small danger', 'aria-label': `Delete ${entry.name}` }, 'Delete');
     del.addEventListener('click', () => renderSaved(deleteBuild(entry.id)));
+    // `?.` = "if the left side is missing, give undefined instead of crashing".
     const heroName = HERO_BY_ID.get(entry.state.hero)?.name || 'Any hero';
     return el('li', {},
       el('div', {}, el('strong', {}, entry.name), el('span', { class: 'meta' }, ` ${heroName} · W${entry.state.focus.weapon}/S${entry.state.focus.spirit}/V${entry.state.focus.vitality}`)),
@@ -224,6 +292,11 @@ function renderSaved(list = loadSaved(), error = '') {
 
 // ───────────────────────── Main ─────────────────────────
 
+/**
+ * Redraw everything from `state`, then put the state in the address bar so
+ * the URL is always a working share link. replaceState changes the URL
+ * without reloading or adding a Back-button entry for every slider tick.
+ */
 function render() {
   syncControls();
   renderBuild(generateBuild(state));
@@ -231,6 +304,8 @@ function render() {
   if (location.hash.slice(1) !== hash) history.replaceState(null, '', `#${hash}`);
 }
 
+// Startup: build the controls, draw the first build, show saved builds.
+$('data-source').textContent = DATA_SOURCE === 'manual' ? 'hand-maintained data' : DATA_SOURCE;
 initControls();
 render();
 renderSaved();

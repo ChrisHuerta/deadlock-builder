@@ -1,34 +1,75 @@
-// Build recommendation engine. Pure functions, no DOM access — easy to test.
+// ═══════════════════════════════════════════════════════════════════════════
+// engine.js — the build recommendation "brain"
+// ═══════════════════════════════════════════════════════════════════════════
 //
-// How it works:
-//  1. The weapon/spirit/vitality sliders are normalized into fractions and the
-//     12 item slots are split between categories (largest-remainder method).
-//  2. The game plan decides how many items of each tier the build has. Slots
-//     are filled in tier order, and categories are interleaved so every focus
-//     area gets items in every phase of the game.
-//  3. Each candidate item is scored: baseline `core` value + weight of each of
-//     its tags. Tag weights come from the sliders (implicit), the selected
-//     priorities (strong) and the hero (mild). Repeated tags decay so the
-//     build stays varied.
+// This file decides WHICH items go into a build. It has no idea a web page
+// exists: it takes a plain object describing what the user wants and returns
+// a plain object describing the build. That separation ("pure functions") is
+// what lets the tests in tests/engine.test.js run it without a browser.
+//
+// The big picture, in 3 steps:
+//
+//  1. SPLIT THE 12 SLOTS. The Weapon/Spirit/Vitality sliders become fractions
+//     that add to 1 (e.g. 60/20/20 → 0.6/0.2/0.2). Multiply by 12 slots and
+//     round fairly → e.g. 7 weapon, 3 spirit, 2 vitality items.
+//
+//  2. PLAN THE ORDER. The "game plan" says how many items of each tier to
+//     buy (e.g. 3× tier-1, 4× tier-2, 3× tier-3, 2× tier-4). We walk through
+//     those slots cheapest-first and hand each one to a category, interleaving
+//     categories so every focus area gets items in every phase of the game.
+//
+//  3. SCORE AND PICK. For each slot, every item that fits (right category and
+//     tier, not already chosen, not excluded) gets a score; the highest wins.
+//
+//        score = core + Σ  tagWeight[tag] × 0.8^(times tag already in build)
+//                     tags
+//
+//     tagWeight[tag] is the sum of three sources:
+//        • slider focus   : 1.5 × your fraction for that category
+//        • priorities     : +2   for every selected priority that lists the tag
+//        • hero           : +0.75 if the hero's preset lists the tag
+//
+// JS ⇄ Python cheat-sheet for this file:
+//   import { X } from './y.js'   ≈  from y import X
+//   export function f(a) {...}   ≈  def f(a): ...   (and make it importable)
+//   const x = ...                ≈  x = ...  (but x can't be reassigned)
+//   let x = ...                  ≈  x = ...  (can be reassigned)
+//   (a) => a * 2                 ≈  lambda a: a * 2
+//   arr.map(f) / arr.filter(f)   ≈  [f(a) for a in arr] / [a for a in arr if f(a)]
+//   new Map()                    ≈  dict()   (.get / .set / .has)
+//   new Set()                    ≈  set()
+//   { ...obj, k: v }             ≈  {**obj, "k": v}
+//   a || b                       ≈  a or b
+//   x ** y                       ≈  x ** y   (same!)
 
 import { ITEMS, TIER_COST, CATEGORIES } from './data/items.js';
 import { HERO_BY_ID } from './data/heroes.js';
 import { PRIORITY_BY_ID, GAME_PLAN_BY_ID, TAG_LABELS } from './data/priorities.js';
 
+// A Deadlock build has 12 item slots once all flex slots are unlocked.
 export const TOTAL_SLOTS = 12;
+
+// ['weapon', 'vitality', 'spirit'] — like list(CATEGORIES.keys()) in Python.
 const CATS = Object.keys(CATEGORIES);
 
+// "Implicit" tags for each category. Even if the user selects no priorities,
+// moving the Spirit slider up should favor spirit-power/cooldown items, etc.
+// 'burst' appears under both weapon and spirit because both deal burst damage.
 const FOCUS_TAGS = {
   weapon: ['dps', 'fire_rate', 'ammo', 'headshot', 'burst'],
   spirit: ['spirit_power', 'cooldown', 'charges', 'duration', 'burst'],
   vitality: ['hp', 'bullet_armor', 'spirit_armor', 'regen', 'lifesteal', 'shield'],
 };
 
-const PRIORITY_WEIGHT = 2;
-const HERO_WEIGHT = 0.75;
-const FOCUS_WEIGHT = 1.5;
-const TAG_DECAY = 0.8;
+// ── Tuning knobs ──────────────────────────────────────────────────────────
+// These numbers control how much each input matters. They're hand-picked
+// (not derived from game data), so feel free to experiment.
+const PRIORITY_WEIGHT = 2;    // a selected priority is the strongest signal
+const HERO_WEIGHT = 0.75;     // hero kit nudges picks but doesn't dominate
+const FOCUS_WEIGHT = 1.5;     // multiplied by the slider fraction (0..1)
+const TAG_DECAY = 0.8;        // each repeat of a tag is worth 80% of the last
 
+// Labels shown above each group of items. The key is the item tier.
 export const PHASES = Object.freeze({
   1: { label: 'Lane phase', hint: 'Cheap stat items to win your lane and farm.' },
   2: { label: 'Early game', hint: 'Core items that define how the build plays.' },
@@ -36,7 +77,13 @@ export const PHASES = Object.freeze({
   4: { label: 'Late game', hint: 'Big-ticket items. Sell lane items to make room if needed.' },
 });
 
+/**
+ * Turn slider values (any scale) into fractions that add up to 1.
+ *   {weapon: 60, spirit: 20, vitality: 20} → {weapon: 0.6, spirit: 0.2, vitality: 0.2}
+ * If every slider is 0, fall back to an even three-way split.
+ */
 export function normalizeFocus(focus) {
+  // Math.max(0, x) guards against negatives; `|| 0` turns undefined into 0.
   const w = Math.max(0, focus.weapon || 0);
   const s = Math.max(0, focus.spirit || 0);
   const v = Math.max(0, focus.vitality || 0);
@@ -45,7 +92,17 @@ export function normalizeFocus(focus) {
   return { weapon: w / sum, spirit: s / sum, vitality: v / sum };
 }
 
-/** Split `total` slots across categories proportional to `fractions`. */
+/**
+ * Split `total` slots across categories in proportion to `fractions`, using
+ * the "largest remainder" method (the same one used to split parliament
+ * seats). Plain rounding can produce 11 or 13 slots; this always gives 12.
+ *
+ * Example with 0.45 / 0.30 / 0.25 and 12 slots:
+ *   exact  = 5.4 / 3.6 / 3.0
+ *   floor  = 5   / 3   / 3      (11 used, 1 left over)
+ *   the leftover goes to the biggest fractional part (.6 → spirit)
+ *   result = 5   / 4   / 3
+ */
 export function allocateSlots(fractions, total = TOTAL_SLOTS) {
   const raw = CATS.map((c) => ({ c, exact: fractions[c] * total }));
   const out = {};
@@ -55,28 +112,50 @@ export function allocateSlots(fractions, total = TOTAL_SLOTS) {
     used += out[r.c];
   }
   raw
+    // Sort by fractional part, biggest first (ties: bigger category wins).
+    // JS sort takes a compare function returning negative/0/positive —
+    // like Python's sorted(key=...), but written as a comparison.
     .sort((a, b) => (b.exact - Math.floor(b.exact)) - (a.exact - Math.floor(a.exact)) || b.exact - a.exact)
-    .slice(0, total - used)
+    .slice(0, total - used)          // take as many as there are leftover slots
     .forEach((r) => { out[r.c] += 1; });
   return out;
 }
 
+/**
+ * Build the tag → weight table used for scoring (step 3 in the header).
+ * Returns a Map like { 'spirit_power' → 2.6, 'cooldown' → 0.6, ... }.
+ */
 function buildTagWeights(state, fractions) {
   const w = new Map();
+  // Helper: add v to the tag's current weight (like d[tag] = d.get(tag, 0) + v).
   const add = (tag, v) => w.set(tag, (w.get(tag) || 0) + v);
 
+  // 1) Sliders: each category's implicit tags get 1.5 × that category's share.
   for (const cat of CATS) {
     for (const tag of FOCUS_TAGS[cat]) add(tag, fractions[cat] * FOCUS_WEIGHT);
   }
+  // 2) Selected priorities: +2 for each tag the priority lists.
   for (const pid of state.priorities) {
     const p = PRIORITY_BY_ID.get(pid);
     if (p) p.tags.forEach((t) => add(t, PRIORITY_WEIGHT));
   }
+  // 3) Hero: +0.75 for each tag in the hero's preset.
   const hero = HERO_BY_ID.get(state.hero);
   if (hero) hero.tags.forEach((t) => add(t, HERO_WEIGHT));
   return w;
 }
 
+/**
+ * Score one item. `tagCounts` remembers how many times each tag already
+ * appears in the build, so repeated tags give less (diminishing returns).
+ *
+ * Example: Extra Spirit (core 1.4, tags ['spirit_power']) in a build where
+ * spirit_power has weight 2.6 and already appears twice:
+ *   1.4 + 2.6 × 0.8² = 1.4 + 1.664 = 3.064
+ *
+ * Also returns the top 3 contributing tags as human-readable "reasons",
+ * which the UI shows under each item ("Fits: spirit power, cooldowns").
+ */
 function scoreItem(item, tagWeights, tagCounts) {
   let score = item.core;
   const reasons = [];
@@ -87,12 +166,25 @@ function scoreItem(item, tagWeights, tagCounts) {
     score += v;
     reasons.push({ tag, v });
   }
-  reasons.sort((a, b) => b.v - a.v);
-  return { score, reasons: reasons.slice(0, 3).map((r) => TAG_LABELS[r.tag] || r.tag) };
+  reasons.sort((a, b) => b.v - a.v); // biggest contribution first
+  return { score, reasons: reasons.slice(0, 3).map((r) => TAG_LABELS.get(r.tag) || r.tag) };
 }
 
-/** Ordered list of {tier, cat} slots that interleaves categories over time. */
+/**
+ * Make the ordered list of slots to fill, e.g.
+ *   [{tier:1, cat:'weapon'}, {tier:1, cat:'spirit'}, {tier:1, cat:'vitality'}, {tier:2, cat:'weapon'}, ...]
+ *
+ * Tiers come from the game plan (cheap first). For categories we want them
+ * spread evenly over time rather than "all weapon items, then all spirit".
+ * At each step we compute how far behind schedule each category is:
+ *
+ *     gap = quota × progress − already_assigned
+ *
+ * where progress goes from 1/12 up to 12/12. The category furthest behind
+ * gets the slot. Over the 12 steps each category ends up exactly at its quota.
+ */
 function planSlots(quotas, tierCounts) {
+  // Expand {1:3, 2:4, 3:3, 4:2} into [1,1,1,2,2,2,2,3,3,3,4,4].
   const tiers = [];
   for (const t of [1, 2, 3, 4]) for (let i = 0; i < (tierCounts[t] || 0); i++) tiers.push(t);
   const total = tiers.length;
@@ -103,8 +195,9 @@ function planSlots(quotas, tierCounts) {
     let best = null;
     let bestGap = -Infinity;
     for (const c of CATS) {
-      if (assigned[c] >= quotas[c]) continue;
+      if (assigned[c] >= quotas[c]) continue; // this category is full
       const gap = quotas[c] * progress - assigned[c];
+      // On a tie, prefer the category with the bigger overall quota.
       if (gap > bestGap || (gap === bestGap && quotas[c] > quotas[best])) {
         best = c;
         bestGap = gap;
@@ -115,11 +208,18 @@ function planSlots(quotas, tierCounts) {
   });
 }
 
+/**
+ * Choose the best item for one slot.
+ * If no item of the exact category+tier is left (e.g. you excluded them all
+ * with "Swap"), it looks at neighbouring tiers in the same category, and only
+ * as a last resort at other categories.
+ */
 function pickItem(slot, chosen, banned, tagWeights, tagCounts) {
+  // All items of a category+tier that are still allowed.
   const available = (cat, tier) =>
     ITEMS.filter((it) => it.cat === cat && it.tier === tier && !chosen.has(it.id) && !banned.has(it.id));
 
-  // Same category, nearest tier first (prefer cheaper on ties); then any category.
+  // Search order for tiers, e.g. for tier 2: [2, 3, 1, 4]. Out-of-range tiers are dropped.
   const tierOrder = [slot.tier, slot.tier + 1, slot.tier - 1, slot.tier + 2, slot.tier - 2, slot.tier + 3, slot.tier - 3]
     .filter((t) => t >= 1 && t <= 4);
   let pool = [];
@@ -128,23 +228,27 @@ function pickItem(slot, chosen, banned, tagWeights, tagCounts) {
     if (pool.length) break;
   }
   if (!pool.length) {
+    // flatMap ≈ [it for c in CATS for it in available(c, t)]
     for (const t of tierOrder) {
       pool = CATS.flatMap((c) => available(c, t));
       if (pool.length) break;
     }
   }
-  if (!pool.length) return null;
+  if (!pool.length) return null; // nothing left at all
 
+  // Keep the highest-scoring item. Ties are broken alphabetically so the
+  // result is always the same for the same input (deterministic).
   let best = null;
   for (const item of pool) {
     const s = scoreItem(item, tagWeights, tagCounts);
     if (!best || s.score > best.score || (s.score === best.score && item.name < best.item.name)) {
-      best = { item, ...s };
+      best = { item, ...s }; // ≈ {"item": item, **s}
     }
   }
   return best;
 }
 
+/** Simple rule-based advice shown in the "Tips" panel. */
 function buildTips(fractions, state, quotas) {
   const tips = [];
   if (fractions.spirit >= 0.45) tips.push('Spirit-heavy: spirit power and cooldown items multiply your ability damage. Prioritize them before situational picks.');
@@ -157,18 +261,26 @@ function buildTips(fractions, state, quotas) {
 }
 
 /**
- * @param {{hero:string, focus:{weapon:number,spirit:number,vitality:number}, priorities:string[], plan:string, banned:string[]}} state
- *   Must already be sanitized (see state.js).
+ * MAIN ENTRY POINT — main.js calls this every time the user changes anything.
+ *
+ * @param state  Already-validated object (see sanitizeState in state.js):
+ *   { hero: 'haze', focus: {weapon, spirit, vitality}, priorities: ['dps'],
+ *     plan: 'balanced', banned: ['glass_cannon'] }
+ * @returns { fractions, quotas, phases: [{tier, label, hint, items}], totalCost, tips }
  */
 export function generateBuild(state) {
+  // Step 1: sliders → fractions → slot counts per category.
   const fractions = normalizeFocus(state.focus);
   const quotas = allocateSlots(fractions);
+  // Step 2 inputs: tier counts from the chosen game plan.
   const plan = GAME_PLAN_BY_ID.get(state.plan) || GAME_PLAN_BY_ID.get('balanced');
+  // Step 3 inputs: scoring weights.
   const tagWeights = buildTagWeights(state, fractions);
   const banned = new Set(state.banned);
-  const chosen = new Set();
-  const tagCounts = new Map();
+  const chosen = new Set();      // ids already in the build
+  const tagCounts = new Map();   // tag → how many chosen items have it
 
+  // Fill each planned slot with the best-scoring item.
   const picks = [];
   for (const slot of planSlots(quotas, plan.tiers)) {
     const pick = pickItem(slot, chosen, banned, tagWeights, tagCounts);
@@ -178,6 +290,7 @@ export function generateBuild(state) {
     picks.push(pick);
   }
 
+  // Group picks by tier for display; drop phases with no items.
   const phases = [1, 2, 3, 4]
     .map((tier) => ({
       tier,
@@ -186,6 +299,7 @@ export function generateBuild(state) {
     }))
     .filter((p) => p.items.length);
 
+  // Count what we actually picked (can differ from `quotas` if fallbacks kicked in).
   const actual = { weapon: 0, spirit: 0, vitality: 0 };
   picks.forEach((p) => { actual[p.item.cat] += 1; });
 
@@ -193,6 +307,7 @@ export function generateBuild(state) {
     fractions,
     quotas: actual,
     phases,
+    // reduce ≈ sum(TIER_COST[p.item.tier] for p in picks)
     totalCost: picks.reduce((sum, p) => sum + TIER_COST[p.item.tier], 0),
     tips: buildTips(fractions, state, actual),
   };

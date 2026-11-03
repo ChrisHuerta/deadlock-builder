@@ -1,0 +1,170 @@
+[
+  {
+    "id": "abrams",
+    "name": "Abrams"
+  },
+  {
+    "id": "apollo",
+    "name": "Apollo"
+  },
+  {
+    "id": "bebop",
+    "name": "Bebop"
+  },
+  {
+    "id": "billy",
+    "name": "Billy"
+  },
+  {
+    "id": "calico",
+    "name": "Calico"
+  },
+  {
+    "id": "celeste",
+    "name": "Celeste"
+  },
+  {
+    "id": "deadman_danny",
+    "name": "Deadman Danny"
+  },
+  {
+    "id": "drifter",
+    "name": "Drifter"
+  },
+  {
+    "id": "dynamo",
+    "name": "Dynamo"
+  },
+  {
+    "id": "graves",
+    "name": "Graves"
+  },
+  {
+    "id": "grey_talon",
+    "name": "Grey Talon"
+  },
+  {
+    "id": "haze",
+    "name": "Haze"
+  },
+  {
+    "id": "holliday",
+    "name": "Holliday"
+  },
+  {
+    "id": "infernus",
+    "name": "Infernus"
+  },
+  {
+    "id": "ivy",
+    "name": "Ivy"
+  },
+  {
+    "id": "kelvin",
+    "name": "Kelvin"
+  },
+  {
+    "id": "lady_geist",
+    "name": "Lady Geist"
+  },
+  {
+    "id": "lash",
+    "name": "Lash"
+  },
+  {
+    "id": "mcginnis",
+    "name": "McGinnis"
+  },
+  {
+    "id": "mina",
+    "name": "Mina"
+  },
+  {
+    "id": "mirage",
+    "name": "Mirage"
+  },
+  {
+    "id": "mo_krill",
+    "name": "Mo & Krill"
+  },
+  {
+    "id": "nurse_harrow",
+    "name": "Nurse Harrow"
+  },
+  {
+    "id": "paige",
+    "name": "Paige"
+  },
+  {
+    "id": "paradox",
+    "name": "Paradox"
+  },
+  {
+    "id": "pocket",
+    "name": "Pocket"
+  },
+  {
+    "id": "rat_king",
+    "name": "Rat King"
+  },
+  {
+    "id": "rem",
+    "name": "Rem"
+  },
+  {
+    "id": "seven",
+    "name": "Seven"
+  },
+  {
+    "id": "shiv",
+    "name": "Shiv"
+  },
+  {
+    "id": "silver",
+    "name": "Silver"
+  },
+  {
+    "id": "sinclair",
+    "name": "Sinclair"
+  },
+  {
+    "id": "solomon",
+    "name": "Solomon"
+  },
+  {
+    "id": "the_doorman",
+    "name": "The Doorman"
+  },
+  {
+    "id": "venator",
+    "name": "Venator"
+  },
+  {
+    "id": "victor",
+    "name": "Victor"
+  },
+  {
+    "id": "vindicta",
+    "name": "Vindicta"
+  },
+  {
+    "id": "viscous",
+    "name": "Viscous"
+  },
+  {
+    "id": "vyper",
+    "name": "Vyper"
+  },
+  {
+    "id": "warden",
+    "name": "Warden"
+  },
+  {
+    "id": "wraith",
+    "name": "Wraith"
+  },
+  {
+    "id": "yamato",
+    "name": "Yamato"
+  }
+]

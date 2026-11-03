@@ -5,7 +5,7 @@
   "description": "Static web app that recommends Deadlock item builds from a Weapon / Spirit / Vitality focus.",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test tests/engine.test.js",
     "serve": "python -m http.server 8080"
   }
 }

@@ -1,0 +1,490 @@
+{
+  "abrams": {
+    "name": "Abrams",
+    "lean": {
+      "weapon": 30,
+      "spirit": 20,
+      "vitality": 50
+    },
+    "tags": [
+      "melee",
+      "close",
+      "lifesteal",
+      "hp",
+      "cc"
+    ]
+  },
+  "bebop": {
+    "name": "Bebop",
+    "lean": {
+      "weapon": 35,
+      "spirit": 40,
+      "vitality": 25
+    },
+    "tags": [
+      "cc",
+      "burst",
+      "cooldown"
+    ]
+  },
+  "calico": {
+    "name": "Calico",
+    "lean": {
+      "weapon": 25,
+      "spirit": 45,
+      "vitality": 30
+    },
+    "tags": [
+      "melee",
+      "mobility",
+      "escape"
+    ]
+  },
+  "dynamo": {
+    "name": "Dynamo",
+    "lean": {
+      "weapon": 15,
+      "spirit": 45,
+      "vitality": 40
+    },
+    "tags": [
+      "team",
+      "cc",
+      "cooldown"
+    ]
+  },
+  "grey_talon": {
+    "name": "Grey Talon",
+    "lean": {
+      "weapon": 35,
+      "spirit": 50,
+      "vitality": 15
+    },
+    "tags": [
+      "range",
+      "burst",
+      "headshot",
+      "charges"
+    ]
+  },
+  "haze": {
+    "name": "Haze",
+    "lean": {
+      "weapon": 60,
+      "spirit": 10,
+      "vitality": 30
+    },
+    "tags": [
+      "fire_rate",
+      "dps",
+      "escape",
+      "lifesteal"
+    ]
+  },
+  "holliday": {
+    "name": "Holliday",
+    "lean": {
+      "weapon": 45,
+      "spirit": 30,
+      "vitality": 25
+    },
+    "tags": [
+      "headshot",
+      "burst",
+      "range"
+    ]
+  },
+  "infernus": {
+    "name": "Infernus",
+    "lean": {
+      "weapon": 25,
+      "spirit": 45,
+      "vitality": 30
+    },
+    "tags": [
+      "dps",
+      "duration",
+      "lifesteal",
+      "close"
+    ]
+  },
+  "ivy": {
+    "name": "Ivy",
+    "lean": {
+      "weapon": 20,
+      "spirit": 40,
+      "vitality": 40
+    },
+    "tags": [
+      "team",
+      "mobility",
+      "cooldown"
+    ]
+  },
+  "kelvin": {
+    "name": "Kelvin",
+    "lean": {
+      "weapon": 15,
+      "spirit": 40,
+      "vitality": 45
+    },
+    "tags": [
+      "team",
+      "cc",
+      "shield"
+    ]
+  },
+  "lady_geist": {
+    "name": "Lady Geist",
+    "lean": {
+      "weapon": 10,
+      "spirit": 55,
+      "vitality": 35
+    },
+    "tags": [
+      "burst",
+      "lifesteal",
+      "hp"
+    ]
+  },
+  "lash": {
+    "name": "Lash",
+    "lean": {
+      "weapon": 20,
+      "spirit": 50,
+      "vitality": 30
+    },
+    "tags": [
+      "burst",
+      "cc",
+      "mobility",
+      "cooldown"
+    ]
+  },
+  "mcginnis": {
+    "name": "McGinnis",
+    "lean": {
+      "weapon": 35,
+      "spirit": 45,
+      "vitality": 20
+    },
+    "tags": [
+      "dps",
+      "duration",
+      "cc"
+    ]
+  },
+  "mirage": {
+    "name": "Mirage",
+    "lean": {
+      "weapon": 40,
+      "spirit": 35,
+      "vitality": 25
+    },
+    "tags": [
+      "dps",
+      "mobility"
+    ]
+  },
+  "mo_krill": {
+    "name": "Mo & Krill",
+    "lean": {
+      "weapon": 15,
+      "spirit": 35,
+      "vitality": 50
+    },
+    "tags": [
+      "cc",
+      "hp",
+      "close",
+      "lifesteal"
+    ]
+  },
+  "paradox": {
+    "name": "Paradox",
+    "lean": {
+      "weapon": 40,
+      "spirit": 40,
+      "vitality": 20
+    },
+    "tags": [
+      "headshot",
+      "burst",
+      "cc"
+    ]
+  },
+  "pocket": {
+    "name": "Pocket",
+    "lean": {
+      "weapon": 15,
+      "spirit": 55,
+      "vitality": 30
+    },
+    "tags": [
+      "burst",
+      "escape",
+      "mobility"
+    ]
+  },
+  "seven": {
+    "name": "Seven",
+    "lean": {
+      "weapon": 30,
+      "spirit": 50,
+      "vitality": 20
+    },
+    "tags": [
+      "dps",
+      "cc",
+      "cooldown"
+    ]
+  },
+  "shiv": {
+    "name": "Shiv",
+    "lean": {
+      "weapon": 45,
+      "spirit": 20,
+      "vitality": 35
+    },
+    "tags": [
+      "melee",
+      "lifesteal",
+      "close"
+    ]
+  },
+  "sinclair": {
+    "name": "Sinclair",
+    "lean": {
+      "weapon": 25,
+      "spirit": 45,
+      "vitality": 30
+    },
+    "tags": [
+      "cc",
+      "burst",
+      "cooldown"
+    ]
+  },
+  "vindicta": {
+    "name": "Vindicta",
+    "lean": {
+      "weapon": 60,
+      "spirit": 20,
+      "vitality": 20
+    },
+    "tags": [
+      "headshot",
+      "range",
+      "burst"
+    ]
+  },
+  "viscous": {
+    "name": "Viscous",
+    "lean": {
+      "weapon": 10,
+      "spirit": 50,
+      "vitality": 40
+    },
+    "tags": [
+      "cc",
+      "burst",
+      "escape"
+    ]
+  },
+  "vyper": {
+    "name": "Vyper",
+    "lean": {
+      "weapon": 45,
+      "spirit": 30,
+      "vitality": 25
+    },
+    "tags": [
+      "mobility",
+      "dps",
+      "debuff"
+    ]
+  },
+  "warden": {
+    "name": "Warden",
+    "lean": {
+      "weapon": 40,
+      "spirit": 25,
+      "vitality": 35
+    },
+    "tags": [
+      "cc",
+      "hp",
+      "dps"
+    ]
+  },
+  "wraith": {
+    "name": "Wraith",
+    "lean": {
+      "weapon": 55,
+      "spirit": 25,
+      "vitality": 20
+    },
+    "tags": [
+      "fire_rate",
+      "dps",
+      "cc"
+    ]
+  },
+  "yamato": {
+    "name": "Yamato",
+    "lean": {
+      "weapon": 45,
+      "spirit": 30,
+      "vitality": 25
+    },
+    "tags": [
+      "burst",
+      "melee",
+      "escape"
+    ]
+  },
+  "apollo": {
+    "name": "Apollo",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "billy": {
+    "name": "Billy",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "celeste": {
+    "name": "Celeste",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "deadman_danny": {
+    "name": "Deadman Danny",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "drifter": {
+    "name": "Drifter",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "graves": {
+    "name": "Graves",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "mina": {
+    "name": "Mina",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "nurse_harrow": {
+    "name": "Nurse Harrow",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "paige": {
+    "name": "Paige",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "rat_king": {
+    "name": "Rat King",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "rem": {
+    "name": "Rem",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "silver": {
+    "name": "Silver",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "solomon": {
+    "name": "Solomon",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "the_doorman": {
+    "name": "The Doorman",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "venator": {
+    "name": "Venator",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  },
+  "victor": {
+    "name": "Victor",
+    "lean": {
+      "weapon": 34,
+      "spirit": 33,
+      "vitality": 33
+    },
+    "tags": []
+  }
+}

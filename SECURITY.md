@@ -19,3 +19,7 @@ instead of a public issue. I'll respond as soon as I can.
 - Don't add external scripts or CDNs. Vendor any dependency into the repo
   and keep the Content Security Policy in `index.html` strict.
 - Never commit secrets. This project needs none.
+- The site must never fetch data at runtime. Game data comes from
+  `tools/update_data.py`, run locally, with changes reviewed via `git diff`.
+  Keep that script on the Python standard library only, and don't relax its
+  host allow-list, size limits or field validation.
